@@ -25,9 +25,27 @@ export async function sendVerificationEmail(email: string, token: string) {
   try {
     await transporter.sendMail(mailOptions)
     console.log('Verification email sent')
-    return('Verification email sent')
+    return 'Verification email sent'
   } catch (error) {
     console.error('Error sending verification email:', error)
-    return(error)
+    return error
+  }
+}
+
+export async function sendPasswordResetEmail(email: string, token: string) {
+  const mailOptions = {
+    from: process.env.EMAIL_USERNAME,
+    to: email,
+    subject: 'Reset Password',
+    html: `<p>Please click <a href="${process.env.HOST}/api/users/forgot-password/${token}">here</a> reset your password.</p>`,
+  }
+
+  try {
+    await transporter.sendMail(mailOptions)
+    console.log('Password reset email sent')
+    return 'Password reset email sent'
+  } catch (error) {
+    console.error('Error sending password reset email:', error)
+    return error
   }
 }

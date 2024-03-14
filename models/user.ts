@@ -7,9 +7,9 @@ export interface User {
   email: string
   password: string
   isEmployer?: boolean
-  firstName: string
-  lastName: string
-  phoneNumber: string
+  firstName?: string
+  lastName?: string
+  phoneNumber?: string
   companyName?: string
   role?: string
   profession?: string
