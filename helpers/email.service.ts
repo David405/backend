@@ -14,12 +14,12 @@ const transporter = nodemailer.createTransport({
   },
 })
 
-export async function sendVerificationEmail(email: string, token: string) {
+export async function sendVerificationEmail(email: string, token: number) {
   const mailOptions = {
     from: process.env.EMAIL_USERNAME,
     to: email,
     subject: 'Email Verification',
-    html: `<p>Please click <a href="${process.env.HOST}/api/users/verify/${token}">here</a> to verify your email.</p>`,
+    html: `<p>This is your verification code: <b>${token}</b>. Verification code is valid for 30 minutes.</p>`,
   }
 
   try {
@@ -32,12 +32,12 @@ export async function sendVerificationEmail(email: string, token: string) {
   }
 }
 
-export async function sendPasswordResetEmail(email: string, token: string) {
+export async function sendPasswordResetEmail(email: string, token: number) {
   const mailOptions = {
     from: process.env.EMAIL_USERNAME,
     to: email,
     subject: 'Reset Password',
-    html: `<p>Please click <a href="${process.env.HOST}/api/users/forgot-password/${token}">here</a> reset your password.</p>`,
+    html: `<p>This is your verification code: <b>${token}</b>. Verification code is valid for 30 minutes.</p>`,
   }
 
   try {
