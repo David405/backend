@@ -7,8 +7,14 @@ import { createUser, User, verifyUserEmail } from '../models/user'
 import {
   sendVerificationEmail,
   sendPasswordResetEmail,
-} from '../helpers/email-service'
-import { generateJWToken, verifyJWToken } from '../helpers/token-generator'
+} from '../helpers/email.service'
+import { generateJWToken, verifyJWToken } from '../helpers/token.generator'
+import {
+  getUserIdByEmail,
+  verifyCode,
+  deleteVerificationCode,
+} from '../models/verification.code'
+import { generateSixDigitNumber } from '../helpers/pin.token.service'
 
 export async function registerUser(req: Request, res: Response): Promise<void> {
   const user: User = req.body
@@ -29,13 +35,26 @@ export async function sendVerificationMail(
   res: Response,
 ): Promise<void> {
   const { email } = req.body
-  const token = generateJWToken(email)
+  const code = generateSixDigitNumber()
 
-  const isSuccessful = await sendVerificationEmail(email, token)
-  if (isSuccessful) {
-    res.status(200).json('verification mail sent')
-  } else {
-    res.status(500).send('Error sending verification mail')
+  const client = await pool.connect()
+
+  const userId = await getUserIdByEmail(email)
+
+  try {
+    const result = await client.query(
+      'INSERT INTO verification_codes (user_id, code) VALUES ($1, $2) RETURNING *',
+      [userId, code],
+    )
+
+    const isSuccessful = await sendVerificationEmail(email, code)
+    if (isSuccessful) {
+      res.status(200).json('verification mail sent')
+    } else {
+      res.status(500).send('Error sending verification mail')
+    }
+  } catch (err) {
+    res.status(500).send(err)
   }
 }
 
@@ -43,14 +62,16 @@ export async function verifyEmailToken(
   req: Request,
   res: Response,
 ): Promise<void> {
-  const { token } = req.params
+  const { code } = req.body
 
   try {
-    const decoded = verifyJWToken(token)
-    const email = decoded.email
+    const email = await verifyCode(code)
+
     const verifyUser = await verifyUserEmail(email)
+
     if (verifyUser) {
       res.status(200).send('User verified successfully')
+      deleteVerificationCode(email)
     } else {
       res.status(500).send('Error verifying user')
     }
@@ -96,17 +117,18 @@ export async function forgotPassword(
   const { email } = req.body
 
   try {
-    const query = 'SELECT * FROM users WHERE email = $1'
-    const result = await pool.query(query, [email])
+    const code = generateSixDigitNumber()
 
-    if (result.rows.length === 0) {
-      res.status(404).json({ message: 'User not found' })
-      return
-    }
+    const client = await pool.connect()
 
-    const token = generateJWToken(email)
+    const userId = await getUserIdByEmail(email)
 
-    const isSuccessful = await sendPasswordResetEmail(email, token)
+    const result = await client.query(
+      'INSERT INTO verification_codes (user_id, code) VALUES ($1, $2) RETURNING *',
+      [userId, code],
+    )
+
+    const isSuccessful = await sendPasswordResetEmail(email, code)
     if (isSuccessful) {
       res
         .status(200)
@@ -124,11 +146,9 @@ export async function changePassword(
   req: Request,
   res: Response,
 ): Promise<void> {
-  const { token } = req.params
-  const { currentPassword, newPassword } = req.body
+  const { currentPassword, newPassword, code } = req.body
 
-  const decoded = verifyJWToken(token)
-  const email = decoded.email
+  const email = await verifyCode(code)
 
   try {
     const query = 'SELECT * FROM users WHERE email = $1'
@@ -154,6 +174,7 @@ export async function changePassword(
     await pool.query(updateQuery, [hashedNewPassword, email])
 
     res.status(200).json({ message: 'Password changed successfully' })
+    deleteVerificationCode(email)
   } catch (error) {
     console.error('Error changing password:', error)
     res.status(500).json({ message: 'Internal server error' })
@@ -188,6 +209,35 @@ export async function editUserProfile(
     res.status(200).json({ message: 'User profile updated successfully' })
   } catch (error) {
     console.error('Error updating user profile:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
+export async function getUserProfile(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  const token: any = req.headers.authorization?.split(' ')[1]
+
+  const decoded = verifyJWToken(token)
+  const email = decoded.email
+
+  try {
+    const query = `
+      SELECT * FROM users
+      WHERE email = $1
+    `
+    const result = await pool.query(query, [email])
+
+    if (result.rows.length === 0) {
+      res.status(404).json({ message: 'User profile not found' })
+      return
+    }
+
+    const userProfile = result.rows[0]
+    res.status(200).json(userProfile)
+  } catch (error) {
+    console.error('Error fetching user profile:', error)
     res.status(500).json({ message: 'Internal server error' })
   }
 }

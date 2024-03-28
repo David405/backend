@@ -6,14 +6,14 @@ export interface User {
   id?: number
   email: string
   password: string
-  isEmployer?: boolean
-  firstName?: string
-  lastName?: string
-  phoneNumber?: string
-  companyName?: string
+  is_employer?: boolean
+  first_name?: string
+  last_name?: string
+  phone_number?: string
+  company_name?: string
   role?: string
   profession?: string
-  isEmailVerified?: boolean
+  is_email_verified?: boolean
 }
 
 export async function createUser(user: User): Promise<User | null> {
@@ -24,15 +24,16 @@ export async function createUser(user: User): Promise<User | null> {
     const values = [
       user.email,
       hashedPassword,
-      user.isEmployer,
-      user.firstName,
-      user.lastName,
-      user.phoneNumber,
-      user.companyName,
+      user.is_employer,
+      user.first_name,
+      user.last_name,
+      user.phone_number,
+      user.company_name,
       user.role,
       user.profession,
-      user.isEmailVerified,
+      user.is_email_verified,
     ]
+
     const result = await pool.query(query, values)
     return result.rows[0]
   } catch (error) {
@@ -41,7 +42,7 @@ export async function createUser(user: User): Promise<User | null> {
   }
 }
 
-export async function verifyUserEmail(email: string): Promise<string> {
+export async function verifyUserEmail(email: string | null): Promise<string> {
   try {
     const client = await pool.connect()
     const result: QueryResult<any> = await client.query(
@@ -51,7 +52,7 @@ export async function verifyUserEmail(email: string): Promise<string> {
 
     if (result.rows.length === 0) {
       client.release()
-      return 'User does not exist'
+      throw new Error('User does not exist')
     } else {
       await client.query(
         'UPDATE users SET is_email_verified = true WHERE email = $1',

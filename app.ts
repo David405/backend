@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express'
 import pool from './config/database'
-import authRouter from './routes/auth-routes'
+import authRouter from './routes/auth.routes'
 
 const app = express()
 
