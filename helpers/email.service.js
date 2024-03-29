@@ -1,6 +1,6 @@
 // emailSender.ts
-import nodemailer from 'nodemailer'
-import dotenv from 'dotenv'
+const nodemailer = require('nodemailer')
+const dotenv = require('dotenv')
 
 dotenv.config()
 
@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
   },
 })
 
-export async function sendVerificationEmail(email: string, token: number) {
+async function sendVerificationEmail(email, token) {
   const mailOptions = {
     from: process.env.EMAIL_USERNAME,
     to: email,
@@ -32,7 +32,7 @@ export async function sendVerificationEmail(email: string, token: number) {
   }
 }
 
-export async function sendPasswordResetEmail(email: string, token: number) {
+async function sendPasswordResetEmail(email, token) {
   const mailOptions = {
     from: process.env.EMAIL_USERNAME,
     to: email,
@@ -48,4 +48,9 @@ export async function sendPasswordResetEmail(email: string, token: number) {
     console.error('Error sending password reset email:', error)
     return error
   }
+}
+
+module.exports = {
+  sendVerificationEmail,
+  sendPasswordResetEmail
 }

@@ -1,10 +1,10 @@
-import * as path from 'path'
-import { Knex } from 'knex'
-import dotenv from 'dotenv'
+const path = require('path');
+// import { Knex } from 'knex'
+const dotenv = require('dotenv');
 
 dotenv.config()
 
-const config: Knex.Config = {
+const config = {
   client: 'postgresql',
   connection: {
     host: process.env.DB_HOST,
@@ -19,4 +19,4 @@ const config: Knex.Config = {
   },
 }
 
-export default config
+module.exports = config;

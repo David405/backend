@@ -1,6 +1,6 @@
-import { Knex } from 'knex'
+const { knex } = require('knex')
 
-export async function up(knex: Knex): Promise<void> {
+module.exports = async function up(knex) {
   await knex.schema.createTable('verification_codes', function (table) {
     table.increments('id').primary()
     table
@@ -16,6 +16,6 @@ export async function up(knex: Knex): Promise<void> {
   })
 }
 
-export async function down(knex: Knex): Promise<void> {
+module.exports = async function down(knex) {
   await knex.schema.dropTableIfExists('verification_codes')
 }

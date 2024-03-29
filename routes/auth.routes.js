@@ -1,5 +1,5 @@
-import express from 'express'
-import {
+const express = require('express');
+const {
   registerUser,
   sendVerificationMail,
   verifyEmailToken,
@@ -8,10 +8,10 @@ import {
   changePassword,
   editUserProfile,
   getUserProfile,
-} from '../controllers/auth.controller'
-import { verifyToken } from '../middleware/auth.middleware'
+} =  require('../controllers/auth.controller')
+const verifyToken = require('../middleware/auth.middleware')
 
-const authRouter = express.Router()
+const authRouter = express()
 
 authRouter.post('/register', registerUser)
 authRouter.post('/send-verification-mail', sendVerificationMail)
@@ -22,4 +22,4 @@ authRouter.post('/change-password', changePassword)
 authRouter.post('/edit-profile', verifyToken, editUserProfile)
 authRouter.get('/get-user-profile', verifyToken, getUserProfile)
 
-export default authRouter
+module.exports = authRouter

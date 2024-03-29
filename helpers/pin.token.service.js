@@ -1,6 +1,6 @@
-import { v4 as uuidv4 } from 'uuid'
+const { v4: uuidv4 } = require('uuid');
 
-export function generateSixDigitNumber(): number {
+module.exports = function generateSixDigitNumber() {
   const uuid = uuidv4()
 
   const hexString = uuid.slice(-6)

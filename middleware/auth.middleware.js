@@ -1,13 +1,13 @@
-import { Request, Response, NextFunction } from 'express'
-import jwt from 'jsonwebtoken'
+const { Request, Response, NextFunction } = require('express')
+const jwt = require('jsonwebtoken')
 
-const JWT_SECRET: any = process.env.SECRET_KEY
+const JWT_SECRET = process.env.SECRET_KEY
 
-export function verifyToken(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): void {
+module.exports = function verifyToken(
+  req,
+  res,
+  next,
+) {
   const token = req.headers.authorization?.split(' ')[1]
 
   if (!token) {
