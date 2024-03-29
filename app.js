@@ -1,5 +1,4 @@
 const express = require('express')
-const pool = require('./config/database')
 const authRouter = require('./routes/auth.routes')
 const mongoose = require('mongoose');
 
@@ -12,8 +11,7 @@ app.use('/api/users', authRouter)
 
 app.get('/', async (req, res) => {
   try {
-    const { rows } = await pool.query('SELECT NOW() as now')
-    res.json({ message: 'Hello, world!', dbTime: rows[0].now })
+    res.json({ message: 'Hello, world!' })
   } catch (error) {
     console.error('Error executing query', error)
     res.status(500).json({ message: 'Internal server error' })
