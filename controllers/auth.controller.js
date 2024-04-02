@@ -10,7 +10,6 @@ const {
 const { generateJWToken, verifyJWToken } = require('../helpers/token.generator')
 const {
   getUserIdByEmail,
-  verifyCode,
   deleteVerificationCode,
   VerificationCode
 } = require('../models/verification.code')
@@ -21,7 +20,8 @@ const generateSixDigitNumber = require('../helpers/pin.token.service')
   try {
     const newUser = await createUser(user)
     if (newUser) {
-      res.status(201).json(newUser)
+      const { password, ...userWithoutPassword } = newUser.toObject();
+      res.status(201).json(userWithoutPassword);
     } else {
       res.status(500).send('Error creating user')
     }
@@ -100,8 +100,10 @@ const generateSixDigitNumber = require('../helpers/pin.token.service')
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
+    const { password: userPassword, ...userWithoutPassword } = user.toObject();
+
     const token = generateJWToken(user.email);
-    res.status(200).json({ token });
+    res.status(200).json({ token, user: userWithoutPassword });
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -131,6 +133,25 @@ const generateSixDigitNumber = require('../helpers/pin.token.service')
     } else {
       res.status(500).send('Error sending password reset email');
     }
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
+
+async function verifyCode(req, res) {
+  const { code } = req.body;
+  try {
+    const verificationCode = await VerificationCode.findOne({ code });
+    if (!verificationCode) {
+      return res.status(404).send('Verification code not found');
+    }
+
+    const user = await User.findById(verificationCode.user_id);
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    res.status(200).send('User verified successfully');
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -215,6 +236,7 @@ module.exports = {
   verifyEmailToken,
   loginUser,
   forgotPassword,
+  verifyCode,
   changePassword,
   editUserProfile,
   getUserProfile

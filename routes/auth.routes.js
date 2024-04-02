@@ -5,6 +5,7 @@ const {
   verifyEmailToken,
   loginUser,
   forgotPassword,
+  verifyCode,
   changePassword,
   editUserProfile,
   getUserProfile,
@@ -18,6 +19,7 @@ authRouter.post('/send-verification-mail', sendVerificationMail)
 authRouter.post('/verify', verifyEmailToken)
 authRouter.post('/login', loginUser)
 authRouter.post('/forgot-password', forgotPassword)
+authRouter.post('/verify-code', verifyCode)
 authRouter.post('/change-password', changePassword)
 authRouter.patch('/edit-profile', verifyToken, editUserProfile)
 authRouter.get('/get-user-profile', verifyToken, getUserProfile)
