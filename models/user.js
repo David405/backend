@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
   role: { type: String,
     enum: {
     values: ["Employer", "Applicant",],
-    message: "Difficulty is either easy, medium, difficult",
+    message: "role is either Employer, Applicant",
   }, 
 },
   profession: { type: String },
