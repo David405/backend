@@ -23,7 +23,7 @@ const applicantSchema = new mongoose.Schema({
         values: ["Genesis", "Exedus","Leviticus","Numbers","Deuteronomy","Joshua"],
         message: "application_step is either Genesis,Exedus,Leviticus,Numbers,Deuteronomy,Joshua",
       }, 
-      default:getPreEmitDiagnostics,
+      default:Genesis,
       required: true,
     }, 
     phone_number: {
@@ -34,9 +34,9 @@ const applicantSchema = new mongoose.Schema({
     position:String,
     resume:String,
     portfolio:String,
-    jobAd_id: { type: mongoose.Schema.Types.ObjectId, ref: 'jobAd', required: true },
+    job_ad_id: { type: mongoose.Schema.Types.ObjectId, ref: 'jobAd', required: true },
 
-    appliedOn:{
+    applied_on:{
         type:Date,
         default:Date.now()
     }
