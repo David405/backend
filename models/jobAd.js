@@ -60,12 +60,8 @@ const jobSchema = new mongoose.Schema({
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   }
-  )
+)
 
 
-
-
-
-
-const jobAd = mongoose.model("jobAd", reviewSchema);
+const jobAd = mongoose.model("jobAd", jobSchema);
 module.exports = jobAd;
