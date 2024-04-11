@@ -9,9 +9,18 @@ const userSchema = new mongoose.Schema({
   last_name: { type: String },
   phone_number: { type: String },
   company_name: { type: String },
-  role: { type: String },
+  role: { type: String,
+    enum: {
+    values: ["Employer", "Applicant",],
+    message: "Difficulty is either easy, medium, difficult",
+  }, 
+},
   profession: { type: String },
   is_email_verified: { type: Boolean, default: false },
+  skills:[String],
+  education:[Object],
+  professional_experience:[Object]
+
 });
 
 const User = mongoose.model('User', userSchema);
