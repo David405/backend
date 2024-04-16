@@ -54,3 +54,14 @@ exports.updateJob = catchAsync(async (req, res, next) => {
     },
   })
 })
+
+exports.deleteJob = catchAsync(async (req, res, next) => {
+  const job = await JobAd.findByIdAndDelete(req.params.id)
+  if (!job) {
+    return next(new appError('No job found with this Id', 404))
+  }
+  res.status(200).json({
+    status: 'success',
+    data: null,
+  })
+})
