@@ -6,10 +6,10 @@ const jobSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Job can not be empty'],
     },
-    companyName: {
-      type: String,
-      required: [true, 'Job must belong to a company'],
-    },
+    // companyName: {
+    //   type: String,
+    //   required: [true, 'Job must belong to a company'],
+    // },
     location: {
       type: String,
       required: true,
@@ -22,10 +22,10 @@ const jobSchema = new mongoose.Schema(
       },
       required: true,
     },
-    level: {
-      type: String,
-      required: true,
-    },
+    // level: {
+    //   type: String,
+    //   required: true,
+    // },
     department: {
       type: String,
       required: true,
@@ -49,7 +49,7 @@ const jobSchema = new mongoose.Schema(
     requirement: [String],
     status: {
       type: String,
-      default: active,
+      default: 'active',
     },
 
     createdAt: {

@@ -1,6 +1,6 @@
 const JobAd = require('../models/job.Ad')
 const catchAsync = require('./../utils/catchAsync')
-const AppError = require('./../utils/appError')
+const appError = require('./../utils/appError')
 
 exports.createJob = catchAsync(async (req, res, next) => {
   const newJob = await JobAd.create({
@@ -21,6 +21,19 @@ exports.createJob = catchAsync(async (req, res, next) => {
     results: newJob.length,
     data: {
       newJob,
+    },
+  })
+})
+
+exports.getJob = catchAsync(async (req, res, next) => {
+  const job = await JobAd.findById(req.params.id)
+  if (!job) {
+    return next(new appError('No job found with this Id', 404))
+  }
+  res.status(200).json({
+    status: 'success',
+    date: {
+      job,
     },
   })
 })
