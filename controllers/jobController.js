@@ -11,7 +11,15 @@ exports.getAllJobs = catchAsync(async (req, res, next) => {
   // 1b)Advance filtering
   let queryStr = JSON.stringify(queryObj)
   queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`)
-  let query = Tour.find(JSON.parse(queryStr)) // converting queryStr back to object and store it in query variable
+  let query = JobAd.find(JSON.parse(queryStr)) // converting queryStr back to object and store it in query variable
+
+  // 2) SORTING
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(',').join(' ')
+    query = query.sort(sortBy)
+  } else {
+    // query = query.sort("-createdAt");
+  }
   // sending response
   res.status(200).json({
     status: 'success',
