@@ -2,6 +2,17 @@ const JobAd = require('../models/job.Ad')
 const catchAsync = require('./../utils/catchAsync')
 const appError = require('./../utils/appError')
 
+exports.getAllJobs = catchAsync(async (req, res, next) => {
+  const jobs = await JobAd.find()
+  // sending response
+  res.status(200).json({
+    status: 'success',
+    result: jobs.length,
+    data: {
+      jobs,
+    },
+  })
+})
 exports.createJob = catchAsync(async (req, res, next) => {
   const newJob = await JobAd.create({
     title: req.body.title,
@@ -18,7 +29,6 @@ exports.createJob = catchAsync(async (req, res, next) => {
 
   res.status(201).json({
     status: 'success',
-    results: newJob.length,
     data: {
       newJob,
     },
