@@ -3,7 +3,15 @@ const catchAsync = require('./../utils/catchAsync')
 const appError = require('./../utils/appError')
 
 exports.getAllJobs = catchAsync(async (req, res, next) => {
-  const jobs = await JobAd.find()
+  // 1a)FILTERING
+  const queryObj = { ...req.query }
+  const excludedFields = ['page', 'sort', 'limit', 'fields']
+  excludedFields.forEach((el) => delete queryObj[el])
+
+  // 1b)Advance filtering
+  let queryStr = JSON.stringify(queryObj)
+  queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`)
+  let query = Tour.find(JSON.parse(queryStr)) // converting queryStr back to object and store it in query variable
   // sending response
   res.status(200).json({
     status: 'success',
