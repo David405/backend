@@ -32,7 +32,24 @@ exports.getJob = catchAsync(async (req, res, next) => {
   }
   res.status(200).json({
     status: 'success',
-    date: {
+    data: {
+      job,
+    },
+  })
+})
+
+exports.updateJob = catchAsync(async (req, res, next) => {
+  const job = await JobAd.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  })
+  if (!job) {
+    return next(new appError('No job found with this Id', 404))
+  }
+
+  res.status(204).json({
+    status: 'success',
+    data: {
       job,
     },
   })
