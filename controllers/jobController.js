@@ -20,6 +20,29 @@ exports.getAllJobs = catchAsync(async (req, res, next) => {
   } else {
     // query = query.sort("-createdAt");
   }
+
+  // //2) FIELD LIMITING
+  if (req.query.fields) {
+    const fields = req.query.fields.split(',').join(' ')
+    query = query.select(fields)
+  } else {
+    query = query.select('-__v')
+  }
+
+  // 4) PAGINNATION(determining the document based on the page)
+  const page = req.query.page * 1 || 1
+  const limit = req.query.limit * 1 || 100
+  const skip = (page - 1) * limit
+
+  // page=2 limit=10, 1-10page1, 11-20page2, 21-30page3
+  query = query.skip(skip).limit(limit)
+
+  if (req.query.page) {
+    const numJob = await JobAd.countDocuments() // this will count the number of documents available
+    if (skip >= numJob) throw new Error('page does not exist')
+  }
+  // executing the query
+  const jobs = await query
   // sending response
   res.status(200).json({
     status: 'success',
@@ -32,9 +55,10 @@ exports.getAllJobs = catchAsync(async (req, res, next) => {
 exports.createJob = catchAsync(async (req, res, next) => {
   const newJob = await JobAd.create({
     title: req.body.title,
-    company: req.body.company,
+    companyName: req.body.company,
     location: req.body.location,
     type: req.body.type,
+    level: req.body.level,
     department: req.body.department,
     salary: req.body.salary,
     category: req.body.category,
