@@ -34,17 +34,29 @@ const applicantSchema = new mongoose.Schema(
         message:
           'application_step is either Genesis,Exedus,Leviticus,Numbers,Deuteronomy,Joshua',
       },
-      default: Genesis,
-      required: true,
+      default: 'Genesis',
+      // required: true,
     },
     phone_number: {
       type: String,
       required: true,
     },
-    linkedin_profile: String,
-    position: String,
-    resume: String,
-    portfolio: String,
+    location: {
+      type: String,
+      required: true,
+    },
+    linkedin_profile: {
+      type: String,
+      required: true,
+    },
+    resume: {
+      type: String,
+      required: true,
+    },
+    portfolio: {
+      type: String,
+      required: true,
+    },
     job_ad_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'jobAd',
