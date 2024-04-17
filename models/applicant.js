@@ -74,5 +74,13 @@ const applicantSchema = new mongoose.Schema(
   },
 )
 
+// //populating the guides fiels whenever we query document
+applicantSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'job_ad_id',
+    select: '-__v -createdAt',
+  })
+  next()
+})
 const Applicant = mongoose.model('Applicant', applicantSchema)
 module.exports = Applicant
