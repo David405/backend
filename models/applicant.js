@@ -59,7 +59,7 @@ const applicantSchema = new mongoose.Schema(
     },
     job_ad_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'jobAd',
+      ref: 'JobAd',
       required: true,
     },
 

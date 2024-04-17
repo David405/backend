@@ -52,6 +52,7 @@ exports.getAllJobs = catchAsync(async (req, res, next) => {
     },
   })
 })
+
 exports.createJob = catchAsync(async (req, res, next) => {
   const newJob = await JobAd.create({
     title: req.body.title,
