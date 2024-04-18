@@ -51,7 +51,10 @@ const jobSchema = new mongoose.Schema(
       type: String,
       default: 'active',
     },
-
+    number_of_applicants: {
+      type: Number,
+      default: 0,
+    },
     createdAt: {
       type: Date,
       default: Date.now(),
@@ -62,6 +65,12 @@ const jobSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   },
 )
+
+// jobSchema.virtual('applicants', {
+//   ref: 'Applicant', //the model we want to reference to
+//   foreignField: 'job_ad_id', //the field in the applicant model where the Id of the jobAd that applicant applied was stored
+//   localField: 'id', //the field in the jobAd model where the id of the job that applicant applied was stored
+// })
 
 const JobAd = mongoose.model('JobAd', jobSchema)
 module.exports = JobAd
