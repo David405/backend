@@ -3,16 +3,6 @@ const JobAd = require('./../models/job.Ad')
 
 const applicantSchema = new mongoose.Schema(
   {
-    fullName: {
-      type: String,
-      required: [true, 'Please tell us your name'],
-    },
-    email: {
-      type: String,
-      required: [true, 'please provide your email'],
-      // unique: true,
-      lowercase: true,
-    },
     gender: {
       type: String,
       enum: {
@@ -38,10 +28,6 @@ const applicantSchema = new mongoose.Schema(
       default: 'Genesis',
       // required: true,
     },
-    phone_number: {
-      type: String,
-      required: true,
-    },
     location: {
       type: String,
       required: true,
@@ -63,6 +49,11 @@ const applicantSchema = new mongoose.Schema(
       ref: 'JobAd',
       required: true,
     },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
 
     applied_on: {
       type: Date,
@@ -79,7 +70,7 @@ const applicantSchema = new mongoose.Schema(
 applicantSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'job_ad_id',
-    select: '-__v -createdAt',
+    select: '-__v -createdAt -description -responsibility',
   })
   next()
 })

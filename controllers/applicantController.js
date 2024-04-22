@@ -55,10 +55,11 @@ exports.getAllApplicants = catchAsync(async (req, res, next) => {
 
 exports.createApplicant = catchAsync(async (req, res, next) => {
   const newApplicant = await Applicant.create({
-    fullName: req.body.fullName,
-    email: req.body.email,
+    // fullName: req.body.fullName,
+    // email: req.body.email,
     gender: req.body.gender,
-    phone_number: req.body.phone_number,
+    // phone_number: req.body.phone_number,
+    user: req.body.user,
     location: req.body.location,
     linkedin_profile: req.body.linkedin_profile,
     resume: req.body.resume,
