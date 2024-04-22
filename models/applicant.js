@@ -71,6 +71,9 @@ applicantSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'job_ad_id',
     select: '-__v -createdAt -description -responsibility',
+  }).populate({
+    path: 'user',
+    select: '-__v ',
   })
   next()
 })
