@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 
 const userSchema = new mongoose.Schema({
@@ -9,27 +9,19 @@ const userSchema = new mongoose.Schema({
   last_name: { type: String },
   phone_number: { type: String },
   company_name: { type: String },
-  role: { type: String,
-    enum: {
-    values: ["Employer", "Applicant",],
-    message: "role is either Employer, Applicant",
-  }, 
-},
+  role: { type: String, enum: ['Employer', 'Applicant'], default: 'Applicant' },
   profession: { type: String },
   is_email_verified: { type: Boolean, default: false },
-  skills:[String],
-  education:[Object],
-  professional_experience:[Object]
+  skills: [String],
+  education: [Object],
+  professional_experience: [Object],
+})
 
-});
-
-const User = mongoose.model('User', userSchema);
-
+const User = mongoose.model('User', userSchema)
 
 async function createUser(user) {
   try {
-    
-    const hashedPassword = await bcrypt.hash(user.password, 10);
+    const hashedPassword = await bcrypt.hash(user.password, 10)
 
     const newUser = new User({
       email: user.email,
@@ -42,37 +34,36 @@ async function createUser(user) {
       role: user.role,
       profession: user.profession,
       is_email_verified: user.is_email_verified,
-    });
+    })
 
-    const result = await newUser.save();
-    return result;
+    const result = await newUser.save()
+    return result
   } catch (error) {
-    console.error('Error creating user:', error);
-    throw error;
+    console.error('Error creating user:', error)
+    throw error
   }
 }
 
 async function verifyUserEmail(email) {
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email })
 
     if (!user) {
-      throw new Error('User does not exist');
+      throw new Error('User does not exist')
     } else {
-      
-      user.is_email_verified = true;
+      user.is_email_verified = true
 
-      await user.save();
-      return 'Email verified and updated successfully';
+      await user.save()
+      return 'Email verified and updated successfully'
     }
   } catch (err) {
-    console.error('Error verifying user email:', err);
-    throw err;
+    console.error('Error verifying user email:', err)
+    throw err
   }
 }
 
 module.exports = {
   createUser,
   verifyUserEmail,
-  User
+  User,
 }
