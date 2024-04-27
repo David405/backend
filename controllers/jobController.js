@@ -120,12 +120,9 @@ exports.deleteJob = catchAsync(async (req, res, next) => {
 
 exports.getJobByEmployer = catchAsync(async (req, res, next) => {
   const jobs = await JobAd.find({ user: req.params.employerId })
-  if (!jobs) {
-    return next(new appError('No job found with this Id', 404))
-  }
   res.status(200).json({
     status: 'success',
-    result: jobs.length,
+    count: jobs.length,
     data: {
       jobs,
     },
