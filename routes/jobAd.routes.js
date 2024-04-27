@@ -9,4 +9,6 @@ router
   .patch(jobController.updateJob)
   .delete(jobController.deleteJob)
 
+router.get('/get-employer-jobs/:employerId', jobController.getJobByEmployer)
+
 module.exports = router
