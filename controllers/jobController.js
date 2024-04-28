@@ -59,6 +59,7 @@ exports.createJob = catchAsync(async (req, res, next) => {
     companyName: req.body.companyName,
     location: req.body.location,
     type: req.body.type,
+    user: req.body.user,
     level: req.body.level,
     department: req.body.department,
     salary: req.body.salary,
@@ -114,5 +115,16 @@ exports.deleteJob = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: null,
+  })
+})
+
+exports.getJobByEmployer = catchAsync(async (req, res, next) => {
+  const jobs = await JobAd.find({ user: req.params.employerId })
+  res.status(200).json({
+    status: 'success',
+    count: jobs.length,
+    data: {
+      jobs,
+    },
   })
 })
