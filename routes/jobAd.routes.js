@@ -4,6 +4,8 @@ const jobController = require('../controllers/jobController')
 const applicantionRouter = require('./../routes/applicant.routes')
 const router = express.Router()
 
+router.route('/total-jobs').get(jobController.getTotalJobs)
+
 router.use('/:jobId/applications', applicantionRouter)
 
 router.route('/').post(jobController.createJob).get(jobController.getAllJobs)

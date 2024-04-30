@@ -59,6 +59,7 @@ exports.createJob = catchAsync(async (req, res, next) => {
     companyName: req.body.companyName,
     location: req.body.location,
     type: req.body.type,
+    addType: req.body.addType,
     user: req.body.user,
     level: req.body.level,
     department: req.body.department,
@@ -123,6 +124,30 @@ exports.getJobByEmployer = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     count: jobs.length,
+    data: {
+      jobs,
+    },
+  })
+})
+
+//AGGREGATIN PIPELINE
+
+exports.getTotalJobs = catchAsync(async (req, res, next) => {
+  const jobs = await JobAd.aggregate([
+    {
+      $group: {
+        _id: null,
+        numberOfJobs: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+      },
+    },
+  ])
+  res.status(200).json({
+    status: 'success',
     data: {
       jobs,
     },
