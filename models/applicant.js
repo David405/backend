@@ -31,7 +31,7 @@ const applicantSchema = new mongoose.Schema(
     applicationStatus: {
       type: String,
       enum: ['pending', 'successful', 'rejected'],
-      default: 'Applicant',
+      default: 'pending',
     },
 
     location: {
