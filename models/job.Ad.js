@@ -26,6 +26,12 @@ const jobSchema = new mongoose.Schema(
         values: ['fulltime', 'remote'],
         message: 'type is either fulltime, remote',
       },
+      addType: {
+        type: String,
+        enum: ['featured', 'normal'],
+        default: 'normal',
+      },
+
       required: true,
     },
     level: {
