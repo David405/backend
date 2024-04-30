@@ -28,6 +28,12 @@ const applicantSchema = new mongoose.Schema(
       default: 'Genesis',
       // required: true,
     },
+    applicationStatus: {
+      type: String,
+      enum: ['pending', 'successful', 'rejected'],
+      default: 'Applicant',
+    },
+
     location: {
       type: String,
       required: true,
