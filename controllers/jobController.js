@@ -100,7 +100,7 @@ exports.updateJob = catchAsync(async (req, res, next) => {
     return next(new appError('No job found with this Id', 404))
   }
 
-  res.status(204).json({
+  res.status(200).json({
     status: 'success',
     data: {
       job,

@@ -1,23 +1,32 @@
-const Applicantion = require('../models/applicantion')
+const Application = require('../models/applicantion')
 const catchAsync = require('../utils/catchAsync')
 const appError = require('../utils/appError')
 
-exports.getAllApplicantions = catchAsync(async (req, res, next) => {
+// functions that will filter out fields tha we dont want to update
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {}
+  Object.keys(obj).forEach((el) => {
+    if (allowedFields.includes(el)) newObj[el] = obj[el]
+  })
+  return newObj
+}
+
+exports.getAllApplications = catchAsync(async (req, res, next) => {
   let filter = {}
   if (req.params.jobId) filter = { job_ad_id: req.params.jobId }
-  const applicantions = await Applicantion.find(filter)
+  const applications = await Application.find(filter)
 
   res.status(200).json({
-    results: applicantions.length,
+    results: applications.length,
     status: 'success',
     data: {
-      applicantions,
+      applications,
     },
   })
 })
 
-exports.createApplicantion = catchAsync(async (req, res, next) => {
-  const newApplicantion = await Applicantion.create({
+exports.createApplication = catchAsync(async (req, res, next) => {
+  const newApplication = await Application.create({
     gender: req.body.gender,
     user: req.body.user,
     location: req.body.location,
@@ -30,26 +39,34 @@ exports.createApplicantion = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: 'success',
     data: {
-      newApplicantion,
+      newApplication,
     },
   })
 })
 
-exports.getApplicantion = catchAsync(async (req, res, next) => {
-  const applicantion = await Applicantion.findById(req.params.id)
-  if (!applicantion) {
-    return next(new appError('No applicant found with this Id', 404))
+exports.getApplication = catchAsync(async (req, res, next) => {
+  const application = await Application.findById(req.params.id)
+  if (!application) {
+    return next(new appError('No application found with this Id', 404))
   }
   res.status(200).json({
     status: 'success',
     data: {
-      applicantion,
+      application,
     },
   })
 })
 
-exports.updateApplicantion = catchAsync(async (req, res, next) => {
-  const applicantion = await Applicantion.findByIdAndUpdate(
+exports.updateApplication = catchAsync(async (req, res, next) => {
+  if (req.body.applicatioStatus) {
+    return next(
+      new appError(
+        'this route is not for applicationStatus update please use  updateapplicationStatus route',
+        400,
+      ),
+    )
+  }
+  const application = await Application.findByIdAndUpdate(
     req.params.id,
     req.body,
     {
@@ -57,21 +74,21 @@ exports.updateApplicantion = catchAsync(async (req, res, next) => {
       runValidators: true,
     },
   )
-  if (!applicantion) {
+  if (!application) {
     return next(new appError('No applicant found with this Id', 404))
   }
 
   res.status(204).json({
     status: 'success',
     data: {
-      applicantion,
+      application,
     },
   })
 })
 
-exports.deleteApplicantion = catchAsync(async (req, res, next) => {
-  const applicantion = await Applicantion.findByIdAndDelete(req.params.id)
-  if (!applicantion) {
+exports.deleteApplication = catchAsync(async (req, res, next) => {
+  const application = await Application.findByIdAndDelete(req.params.id)
+  if (!application) {
     return next(new appError('No applicant found with this Id', 404))
   }
   res.status(200).json({
@@ -81,7 +98,7 @@ exports.deleteApplicantion = catchAsync(async (req, res, next) => {
 })
 
 exports.getTotalApplications = catchAsync(async (req, res, next) => {
-  const applications = await Applicantion.aggregate([
+  const applications = await Application.aggregate([
     {
       $group: {
         _id: null,
@@ -103,7 +120,7 @@ exports.getTotalApplications = catchAsync(async (req, res, next) => {
 })
 
 exports.getTotalApplicationStatus = catchAsync(async (req, res, next) => {
-  const types = await Applicantion.aggregate([
+  const types = await Application.aggregate([
     {
       $group: {
         _id: '$applicationStatus',
@@ -115,6 +132,26 @@ exports.getTotalApplicationStatus = catchAsync(async (req, res, next) => {
     status: 'success',
     data: {
       types,
+    },
+  })
+})
+
+exports.updateApplicationStatus = catchAsync(async (req, res, next) => {
+  const filteredBody = filterObj(req.body, 'applicationStatus')
+  // if (req.file) filteredBody.photo = req.file.filename; //saving the name of the newly updated image to photo filed and also add photo field to the fields that will be update which is not initially in the selected field that will be updated updated
+  // 3)update the user document
+  const application = await Application.findByIdAndUpdate(
+    req.params.id,
+    filteredBody,
+    {
+      new: true,
+      runValidators: true,
+    },
+  )
+  res.status(200).json({
+    status: 'success',
+    data: {
+      application,
     },
   })
 })

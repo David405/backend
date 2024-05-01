@@ -9,14 +9,19 @@ router
   .route('/total-applicationStatus')
   .get(applicationController.getTotalApplicationStatus)
 
+// update applicationstatus
+router
+  .route('/:id/update-applicationStatus')
+  .patch(applicationController.updateApplicationStatus)
+
 router
   .route('/')
-  .post(applicationController.createApplicantion)
-  .get(applicationController.getAllApplicantions)
+  .post(applicationController.createApplication)
+  .get(applicationController.getAllApplications)
 router
   .route('/:id')
-  .get(applicationController.getApplicantion)
-  .patch(applicationController.updateApplicantion)
-  .delete(applicationController.deleteApplicantion)
+  .get(applicationController.getApplication)
+  .patch(applicationController.updateApplication)
+  .delete(applicationController.deleteApplication)
 
 module.exports = router
