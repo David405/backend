@@ -50,7 +50,7 @@ const applicantSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    job_ad_id: {
+    jobAdId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'JobAd',
       required: true,
@@ -61,7 +61,7 @@ const applicantSchema = new mongoose.Schema(
       required: true,
     },
 
-    applied_on: {
+    appliedOn: {
       type: Date,
       default: Date.now(),
     },
@@ -79,7 +79,7 @@ applicantSchema.pre(/^find/, function (next) {
     select: '-__v -createdAt -description -responsibility',
   }).populate({
     path: 'user',
-    select: '-__v ',
+    select: '-__v -password',
   })
   next()
 })

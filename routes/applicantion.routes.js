@@ -5,6 +5,9 @@ const router = express.Router({ mergeParams: true })
 router
   .route('/total-applications')
   .get(applicationController.getTotalApplications)
+router
+  .route('/total-applicationStatus')
+  .get(applicationController.getTotalApplicationStatus)
 
 router
   .route('/')

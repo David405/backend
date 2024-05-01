@@ -24,7 +24,7 @@ exports.createApplicantion = catchAsync(async (req, res, next) => {
     linkedin_profile: req.body.linkedin_profile,
     resume: req.body.resume,
     portfolio: req.body.portfolio,
-    job_ad_id: req.body.job_ad_id,
+    jobAdId: req.body.jobAdId,
   })
 
   res.status(201).json({
@@ -98,6 +98,23 @@ exports.getTotalApplications = catchAsync(async (req, res, next) => {
     status: 'success',
     data: {
       applications,
+    },
+  })
+})
+
+exports.getTotalApplicationStatus = catchAsync(async (req, res, next) => {
+  const types = await Applicantion.aggregate([
+    {
+      $group: {
+        _id: '$applicationStatus',
+        numberOfJobs: { $sum: 1 },
+      },
+    },
+  ])
+  res.status(200).json({
+    status: 'success',
+    data: {
+      types,
     },
   })
 })
