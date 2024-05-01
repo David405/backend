@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const JobAd = require('./../models/job.Ad')
+const JobAd = require('./job.Ad')
 
 const applicantSchema = new mongoose.Schema(
   {

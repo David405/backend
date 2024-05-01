@@ -1,7 +1,7 @@
 const express = require('express')
 const jobController = require('../controllers/jobController')
 
-const applicantionRouter = require('./../routes/applicant.routes')
+const applicantionRouter = require('./applicantion.routes')
 const router = express.Router()
 
 router.route('/total-jobs').get(jobController.getTotalJobs)
