@@ -5,6 +5,7 @@ const applicantionRouter = require('./../routes/applicant.routes')
 const router = express.Router()
 
 router.route('/total-jobs').get(jobController.getTotalJobs)
+router.route('/total-jobTypes').get(jobController.getTotalJobsTypes)
 
 router.use('/:jobId/applications', applicantionRouter)
 

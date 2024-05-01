@@ -153,3 +153,20 @@ exports.getTotalJobs = catchAsync(async (req, res, next) => {
     },
   })
 })
+
+exports.getTotalJobsTypes = catchAsync(async (req, res, next) => {
+  const types = await JobAd.aggregate([
+    {
+      $group: {
+        _id: '$addType',
+        numberOfJobs: { $sum: 1 },
+      },
+    },
+  ])
+  res.status(200).json({
+    status: 'success',
+    data: {
+      types,
+    },
+  })
+})
