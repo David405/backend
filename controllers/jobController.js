@@ -59,6 +59,7 @@ exports.createJob = catchAsync(async (req, res, next) => {
     companyName: req.body.companyName,
     location: req.body.location,
     type: req.body.type,
+    addType: req.body.addType,
     user: req.body.user,
     level: req.body.level,
     department: req.body.department,
@@ -99,7 +100,7 @@ exports.updateJob = catchAsync(async (req, res, next) => {
     return next(new appError('No job found with this Id', 404))
   }
 
-  res.status(204).json({
+  res.status(200).json({
     status: 'success',
     data: {
       job,
@@ -125,6 +126,47 @@ exports.getJobByEmployer = catchAsync(async (req, res, next) => {
     count: jobs.length,
     data: {
       jobs,
+    },
+  })
+})
+
+//AGGREGATIN PIPELINE
+
+exports.getTotalJobs = catchAsync(async (req, res, next) => {
+  const jobs = await JobAd.aggregate([
+    {
+      $group: {
+        _id: null,
+        numberOfJobs: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+      },
+    },
+  ])
+  res.status(200).json({
+    status: 'success',
+    data: {
+      jobs,
+    },
+  })
+})
+
+exports.getTotalJobsTypes = catchAsync(async (req, res, next) => {
+  const types = await JobAd.aggregate([
+    {
+      $group: {
+        _id: '$addType',
+        numberOfJobs: { $sum: 1 },
+      },
+    },
+  ])
+  res.status(200).json({
+    status: 'success',
+    data: {
+      types,
     },
   })
 })

@@ -28,6 +28,12 @@ const jobSchema = new mongoose.Schema(
       },
       required: true,
     },
+    addType: {
+      type: String,
+      enum: ['featured', 'normal'],
+      default: 'normal',
+      required: true,
+    },
     level: {
       type: String,
       required: true,

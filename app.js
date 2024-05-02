@@ -6,7 +6,7 @@ dotenv.config({ path: './.env' })
 
 const authRouter = require('./routes/auth.routes')
 const jobRouter = require('./routes/jobAd.routes')
-const applicantRouter = require('./routes/applicant.routes')
+const applicationRouter = require('./routes/application.routes')
 
 const app = express()
 
@@ -16,7 +16,7 @@ app.use(express.json())
 
 app.use('/api/users', authRouter)
 app.use('/api/v1/jobs', jobRouter)
-app.use('/api/v1/applicants', applicantRouter)
+app.use('/api/v1/applications', applicationRouter)
 
 app.get('/', async (req, res) => {
   try {
