@@ -1,4 +1,4 @@
-const Application = require('../models/applicantion')
+const Application = require('../models/application')
 const catchAsync = require('../utils/catchAsync')
 const appError = require('../utils/appError')
 
@@ -78,7 +78,7 @@ exports.updateApplication = catchAsync(async (req, res, next) => {
     return next(new appError('No applicant found with this Id', 404))
   }
 
-  res.status(204).json({
+  res.status(200).json({
     status: 'success',
     data: {
       application,

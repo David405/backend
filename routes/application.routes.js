@@ -1,17 +1,17 @@
 const express = require('express')
-const applicationController = require('../controllers/applicantionController')
+const applicationController = require('../controllers/applicationController')
 const router = express.Router({ mergeParams: true })
 
 router
   .route('/total-applications')
   .get(applicationController.getTotalApplications)
 router
-  .route('/total-applicationStatus')
+  .route('/total-application-status')
   .get(applicationController.getTotalApplicationStatus)
 
 // update applicationstatus
 router
-  .route('/:id/update-applicationStatus')
+  .route('/:id/update-application-status')
   .patch(applicationController.updateApplicationStatus)
 
 router
