@@ -63,7 +63,7 @@ const jobSchema = new mongoose.Schema(
       type: String,
       default: 'active',
     },
-    number_of_applicants: {
+    numberOfApplications: {
       type: Number,
       default: 0,
     },
