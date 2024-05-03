@@ -30,7 +30,7 @@ exports.createApplication = catchAsync(async (req, res, next) => {
     gender: req.body.gender,
     user: req.body.user,
     location: req.body.location,
-    linkedin_profile: req.body.linkedin_profile,
+    linkedinProfile: req.body.linkedinProfile,
     resume: req.body.resume,
     portfolio: req.body.portfolio,
     jobAdId: req.body.jobAdId,
