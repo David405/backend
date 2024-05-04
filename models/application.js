@@ -72,6 +72,9 @@ const applicantSchema = new mongoose.Schema(
   },
 )
 
+// creating indexes so that a USER can only apply for a job ones
+applicantSchema.index({ jobAdId: 1, user: 1 }, { unique: true })
+
 // //populating the guides fiels whenever we query document
 applicantSchema.pre(/^find/, function (next) {
   this.populate({
