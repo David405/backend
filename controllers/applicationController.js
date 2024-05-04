@@ -57,35 +57,6 @@ exports.getApplication = catchAsync(async (req, res, next) => {
   })
 })
 
-exports.updateApplication = catchAsync(async (req, res, next) => {
-  if (req.body.applicatioStatus) {
-    return next(
-      new appError(
-        'this route is not for applicationStatus update please use  updateapplicationStatus route',
-        400,
-      ),
-    )
-  }
-  const application = await Application.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    {
-      new: true,
-      runValidators: true,
-    },
-  )
-  if (!application) {
-    return next(new appError('No applicant found with this Id', 404))
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      application,
-    },
-  })
-})
-
 exports.deleteApplication = catchAsync(async (req, res, next) => {
   const application = await Application.findByIdAndDelete(req.params.id)
   if (!application) {
@@ -136,10 +107,13 @@ exports.getTotalApplicationStatus = catchAsync(async (req, res, next) => {
   })
 })
 
-exports.updateApplicationStatus = catchAsync(async (req, res, next) => {
-  const filteredBody = filterObj(req.body, 'applicationStatus')
-  // if (req.file) filteredBody.photo = req.file.filename; //saving the name of the newly updated image to photo filed and also add photo field to the fields that will be update which is not initially in the selected field that will be updated updated
-  // 3)update the user document
+exports.updateApplication = catchAsync(async (req, res, next) => {
+  const filteredBody = filterObj(
+    req.body,
+    'applicationStatus',
+    'applicationStage',
+  )
+
   const application = await Application.findByIdAndUpdate(
     req.params.id,
     filteredBody,
@@ -148,6 +122,9 @@ exports.updateApplicationStatus = catchAsync(async (req, res, next) => {
       runValidators: true,
     },
   )
+  if (!application) {
+    return next(new appError('No application found with this Id', 404))
+  }
   res.status(200).json({
     status: 'success',
     data: {
