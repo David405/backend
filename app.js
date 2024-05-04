@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const dotenv = require('dotenv')
 dotenv.config({ path: './.env' })
 
+const AppError = require('./utils/appError')
 const authRouter = require('./routes/auth.routes')
 const jobRouter = require('./routes/jobAd.routes')
 const applicationRouter = require('./routes/application.routes')
@@ -17,6 +18,11 @@ app.use(express.json())
 app.use('/api/users', authRouter)
 app.use('/api/v1/jobs', jobRouter)
 app.use('/api/v1/applications', applicationRouter)
+
+//Handling unhandled route
+app.all('*', (req, res, next) => {
+  next(new AppError(`Cant find ${req.originalUrl} on this server`, 404))
+})
 
 app.get('/', async (req, res) => {
   try {
