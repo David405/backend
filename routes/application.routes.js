@@ -10,9 +10,9 @@ router
   .get(applicationController.getTotalApplicationStatus)
 
 // update applicationstatus
-router
-  .route('/:id/update-application-status')
-  .patch(applicationController.updateApplicationStatus)
+// router
+//   .route('/:id/update-application')
+//   .patch(applicationController.updateApplication)
 
 router
   .route('/')
