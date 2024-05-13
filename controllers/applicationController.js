@@ -1,7 +1,6 @@
 const Application = require('../models/application')
 const catchAsync = require('../utils/catchAsync')
 const appError = require('../utils/appError')
-
 // functions that will filter out fields tha we dont want to update
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {}
@@ -13,7 +12,7 @@ const filterObj = (obj, ...allowedFields) => {
 
 exports.getAllApplications = catchAsync(async (req, res, next) => {
   let filter = {}
-  if (req.params.jobId) filter = { job_ad_id: req.params.jobId }
+  if (req.params.jobId) filter = { jobAdId: req.params.jobId }
   const applications = await Application.find(filter)
 
   res.status(200).json({
