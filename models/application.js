@@ -50,6 +50,15 @@ const applicantSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    coverLatter: {
+      type: String,
+      required: true,
+    },
+    isCancelled: {
+      type: Boolean,
+      default: false,
+      // select: false,
+    },
     jobAdId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'JobAd',
@@ -71,7 +80,10 @@ const applicantSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   },
 )
-
+applicantSchema.pre(/^find/, function (next) {
+  this.find({ isCancelled: { $ne: true } })
+  next()
+})
 // creating indexes so that a USER can only apply for a job ones
 applicantSchema.index({ jobAdId: 1, user: 1 }, { unique: true })
 

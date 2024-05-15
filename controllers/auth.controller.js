@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const catchAsync = require('./../utils/catchAsync')
 const AppError = require('./../utils/appError')
+const cloudinary = require('./../utils/cloudinary')
 
 const { createUser, User, verifyUserEmail } = require('../models/user')
 const {
@@ -253,6 +254,7 @@ const updateMe = catchAsync(async (req, res, next) => {
   }
 
   // 2)filtering out the unwanted field names that are not allowed to be updated by calling the filterObj function and storing it in filteredBody
+
   const filteredBody = filterObj(
     req.body,
     'first_name',
@@ -264,6 +266,7 @@ const updateMe = catchAsync(async (req, res, next) => {
     'education',
     'professional_experience',
   )
+
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
     new: true,
     runValidators: true,

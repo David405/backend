@@ -1,5 +1,7 @@
 const express = require('express')
 const applicationController = require('../controllers/applicationController')
+const { verifyToken } = require('./../middleware/auth.middleware')
+
 const router = express.Router({ mergeParams: true })
 
 router
@@ -8,6 +10,10 @@ router
 router
   .route('/total-application-status')
   .get(applicationController.getTotalApplicationStatus)
+
+router
+  .route('/cancel-application')
+  .patch(verifyToken, applicationController.cancelApplication)
 
 // update applicationstatus
 // router

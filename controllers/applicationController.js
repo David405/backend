@@ -31,6 +31,7 @@ exports.createApplication = catchAsync(async (req, res, next) => {
     location: req.body.location,
     linkedinProfile: req.body.linkedinProfile,
     resume: req.body.resume,
+    coverLatter: req.body.coverLatter,
     portfolio: req.body.portfolio,
     jobAdId: req.body.jobAdId,
   })
@@ -130,4 +131,42 @@ exports.updateApplication = catchAsync(async (req, res, next) => {
       application,
     },
   })
+})
+
+exports.cancelApplication = catchAsync(async (req, res, next) => {
+  const id = req.user.id
+  const jobId = req.body.jobAdId
+  // .log(id)
+  // const application = await Application.find(
+  //   (id) => id.toString() === jobId.toString(),
+  // )
+  // console.log(application)
+
+  // const application = await Application.findOne(
+  //   { user: id },
+  //   { jobAdId: jobId },
+  // )
+  const application = await Application.findOne({
+    $and: [{ user: id }, { jobAdId: jobId }],
+  })
+  console.log(application.id)
+
+  const updatedAppplication = await Application.findByIdAndUpdate(
+    application.id,
+    {
+      isCancelled: true,
+    },
+    { new: true, runValidators: true },
+  )
+
+  if (!application) {
+    return next(new appError('No application found with this Id', 404))
+  }
+  // console.log(updatedAppplication)
+
+  res.status(204).json({
+    status: 'success',
+    data: application,
+  })
+  // console.log(application)
 })
