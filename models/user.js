@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
   is_email_verified: { type: Boolean, default: false },
   skills: [String],
   education: [Object],
-  photo: String,
+  photo: { type: String },
   professional_experience: [Object],
 })
 

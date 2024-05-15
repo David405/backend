@@ -1,4 +1,5 @@
 // import { Request, Response } from 'express'
+const multer = require('multer')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const catchAsync = require('./../utils/catchAsync')
@@ -11,6 +12,28 @@ const {
   sendPasswordResetEmail,
 } = require('../helpers/email.service')
 const { generateJWToken, verifyJWToken } = require('../helpers/token.generator')
+
+// configuring multer
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/img/users')
+  },
+  filename: (req, file, cb) => {
+    const ext = file.mimetype.split('/')[1]
+    cb(null, `user-${req.user.id}-${Date.now()}.${ext}`)
+  },
+})
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true)
+  } else
+    new AppError('This is not an image, please upload only image', 400), false
+}
+
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter })
+
+const uploadUserPhoto = upload.single('photo')
 
 // functions that will filter out fields tha we dont want to update
 const filterObj = (obj, ...allowedFields) => {
@@ -243,6 +266,7 @@ const getAllUsers = catchAsync(async (req, res, next) => {
 
 // updating current user data
 const updateMe = catchAsync(async (req, res, next) => {
+  console.log(req.file)
   // 1) create error if user tries post password data
   if (req.body.password) {
     return next(
@@ -259,7 +283,6 @@ const updateMe = catchAsync(async (req, res, next) => {
     req.body,
     'first_name',
     'last_name',
-    'photo',
     'phone_number',
     'company_name',
     'profession',
@@ -267,6 +290,7 @@ const updateMe = catchAsync(async (req, res, next) => {
     'professional_experience',
   )
 
+  if (req.file) filteredBody.photo = req.file.filename
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
     new: true,
     runValidators: true,
@@ -289,5 +313,6 @@ module.exports = {
   editUserProfile,
   getUserProfile,
   getAllUsers,
+  uploadUserPhoto,
   updateMe,
 }
