@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
   is_email_verified: { type: Boolean, default: false },
   skills: [String],
   education: [Object],
+  photo: { type: String },
   professional_experience: [Object],
 })
 
@@ -32,6 +33,7 @@ async function createUser(user) {
       phone_number: user.phone_number,
       company_name: user.company_name,
       role: user.role,
+      photo: user.photo,
       profession: user.profession,
       is_email_verified: user.is_email_verified,
     })

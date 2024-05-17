@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+const crypto = require('crypto')
 const jwt = require('jsonwebtoken')
 
 const JWT_SECRET = process.env.SECRET_KEY
@@ -7,8 +7,11 @@ function generateToken() {
   return crypto.randomBytes(20).toString('hex')
 }
 
-function generateJWToken(email) {
-  return jwt.sign({ email }, JWT_SECRET || '', { expiresIn: '1h' })
+// function generateJWToken(email) {
+//   return jwt.sign({ email }, JWT_SECRET || '', { expiresIn: '1h' })
+// }
+function generateJWToken(user) {
+  return jwt.sign({ ...user }, JWT_SECRET || '', { expiresIn: '1h' })
 }
 
 function verifyJWToken(token) {
@@ -23,5 +26,5 @@ function verifyJWToken(token) {
 module.exports = {
   generateToken,
   verifyJWToken,
-  generateJWToken
+  generateJWToken,
 }
