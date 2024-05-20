@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 const dotenv = require('dotenv')
 dotenv.config({ path: './.env' })
 
+const catchAsync = require('./utils/catchAsync')
 const AppError = require('./utils/appError')
 const globalErrorHandler = require('./controllers/errorController')
 const authRouter = require('./routes/auth.routes')
@@ -60,3 +61,37 @@ const server = app.listen(PORT, () => {
 })
 
 const io = require('socket.io')(server)
+
+//authenticating socket.io user
+io.use(
+  catchAsync(async (socket, next) => {
+    const token = socket.handshake.query.token
+    // 2)verify the token
+    const decoded = await promisify(jwt.verify)(token, JWT_SECRET)
+    // console.log({ decoded })
+    // console.log(decoded['$__']._id)
+    // 3)check if the user accessing the route still exist
+    const currentUser = await User.findById(decoded['$__']._id)
+    if (!currentUser) {
+      return next(
+        new AppError(
+          'The User belonging to this token does not exist anylonger',
+          401,
+        ),
+      )
+    }
+
+    // GRANT ACCESS TO PROTECTED ROUTE
+    req.user = currentUser
+    socket.userId = req.user.id
+    next()
+  }),
+)
+
+io.on('connection', (socket) => {
+  console.log('connected' + socket.userId)
+})
+
+io.on('disconnection', (socket) => {
+  console.log('disconnected' + socket.userId)
+})
