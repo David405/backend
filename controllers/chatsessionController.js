@@ -11,3 +11,15 @@ exports.createChatSession = catchAsync(async (req, res, next) => {
     },
   })
 })
+
+exports.getAllChatSession = catchAsync(async (req, res, next) => {
+  const ChatSessions = await ChatSession.find()
+
+  res.status(200).json({
+    count: ChatSessions.length,
+    status: 'success',
+    data: {
+      ChatSessions,
+    },
+  })
+})
