@@ -10,6 +10,8 @@ const globalErrorHandler = require('./controllers/errorController')
 const authRouter = require('./routes/auth.routes')
 const jobRouter = require('./routes/jobAd.routes')
 const applicationRouter = require('./routes/application.routes')
+const messageRouter = require('./routes/message.route')
+const chatSessionRouter = require('./routes/chatSession.route')
 
 const app = express()
 
@@ -25,6 +27,8 @@ app.use(express.json())
 app.use('/api/users', authRouter)
 app.use('/api/v1/jobs', jobRouter)
 app.use('/api/v1/applications', applicationRouter)
+// app.use('/api/v1/messages', messageRouter)
+// app.use('/api/v1/chatsessions', chatSessionRouter)
 
 //Handling unhandled route
 app.all('*', (req, res, next) => {

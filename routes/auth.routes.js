@@ -11,6 +11,7 @@ const {
   getUserProfile,
   getAllUsers,
   uploadUserPhoto,
+  resizeUserPhoto,
   updateMe,
 } = require('../controllers/auth.controller')
 // const verifyToken = require('../middleware/auth.middleware')
@@ -28,5 +29,11 @@ authRouter.post('/change-password', changePassword)
 authRouter.patch('/edit-profile', verifyToken, editUserProfile)
 authRouter.get('/get-user-profile', verifyToken, getUserProfile)
 authRouter.get('/', verifyToken, getAllUsers)
-authRouter.patch('/updateMe', verifyToken, uploadUserPhoto, updateMe)
+authRouter.patch(
+  '/updateMe',
+  verifyToken,
+  uploadUserPhoto,
+  resizeUserPhoto,
+  updateMe,
+)
 module.exports = authRouter
