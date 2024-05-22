@@ -1,5 +1,6 @@
 // import { Request, Response } from 'express'
 const multer = require('multer')
+// const sharp = require('sharp')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const catchAsync = require('./../utils/catchAsync')
@@ -34,7 +35,9 @@ const multerFilter = (req, file, cb) => {
 const upload = multer({ storage: multerStorage, fileFilter: multerFilter })
 
 const uploadUserPhoto = upload.single('photo')
-
+const resizeUserPhoto = (req, res, next) => {
+  if (!req.file) return next()
+}
 // functions that will filter out fields tha we dont want to update
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {}
@@ -314,5 +317,6 @@ module.exports = {
   getUserProfile,
   getAllUsers,
   uploadUserPhoto,
+  resizeUserPhoto,
   updateMe,
 }
