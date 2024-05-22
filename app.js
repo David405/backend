@@ -31,14 +31,6 @@ app.use('/api/v1/applications', applicationRouter)
 // app.use('/api/v1/messages', messageRouter)
 app.use('/api/v1/chatsessions', chatSessionRouter)
 
-//Handling unhandled route
-app.all('*', (req, res, next) => {
-  next(new AppError(`Cant find ${req.originalUrl} on this server`, 404))
-})
-
-// global error handling
-app.use(globalErrorHandler)
-
 app.get('/', async (req, res) => {
   try {
     res.json({ message: 'Hello, world!' })
@@ -47,6 +39,13 @@ app.get('/', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' })
   }
 })
+//Handling unhandled route
+app.all('*', (req, res, next) => {
+  next(new AppError(`Cant find ${req.originalUrl} on this server`, 404))
+})
+
+// global error handling
+app.use(globalErrorHandler)
 
 mongoose.connect(process.env.MONGODB_HOST)
 const db = mongoose.connection
