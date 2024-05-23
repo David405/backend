@@ -11,7 +11,7 @@ function generateToken() {
 //   return jwt.sign({ email }, JWT_SECRET || '', { expiresIn: '1h' })
 // }
 function generateJWToken(user) {
-  jwt.sign({ ...user }, JWT_SECRET || '');
+  return jwt.sign({ ...user }, JWT_SECRET || '');
 }
 
 function verifyJWToken(token) {
