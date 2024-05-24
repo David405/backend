@@ -17,7 +17,6 @@ function generateJWToken(user) {
 function verifyJWToken(token) {
   try {
     const decoded = jwt.verify(token, JWT_SECRET)
-    console.log(decoded)
     return decoded
   } catch (err) {
     return null
