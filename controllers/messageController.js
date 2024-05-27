@@ -35,12 +35,14 @@ exports.getAllMessages = catchAsync(async (req, res, next) => {
 })
 
 exports.deleteMessage = catchAsync(async (req, res, next) => {
-  const message = await Message.findOneAndDelete({
+  const message = await Message.findOne({
     $and: [{ user: req.user.id }, { _id: req.params.id }],
   })
   if (!message) {
-    return next(new appError('No message found with this Id', 404))
+    return next(new appError('No message found ', 404))
   }
+
+  await Message.findByIdAndDelete(message.id)
   res.status(200).json({
     status: 'success',
     data: null,
