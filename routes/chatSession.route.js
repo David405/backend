@@ -7,7 +7,7 @@ const { verifyToken } = require('./../middleware/auth.middleware')
 const router = express.Router()
 
 // get All messages by sessionId ROUTE
-router.use('/:ssessionId/messages', messageRouter)
+router.use('/:sessionId/messages', messageRouter)
 
 router
   .route('/')
