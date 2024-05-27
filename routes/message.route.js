@@ -4,7 +4,10 @@ const { verifyToken } = require('./../middleware/auth.middleware')
 
 const router = express.Router({ mergeParams: true })
 
-router.route('/').post(verifyToken, messageController.createMessage)
+router
+  .route('/')
+  .post(verifyToken, messageController.createMessage)
+  .get(verifyToken, messageController.getAllMessages)
 
 router
   .route('/:id')
