@@ -24,3 +24,29 @@ exports.getAllMessages = catchAsync(async (req, res, next) => {
     },
   })
 })
+
+exports.deleteMessage = catchAsync(async (req, res, next) => {
+  const message = await Message.findOneAndDelete({
+    $and: [{ user: req.user.id }, { _id: req.params.id }],
+  })
+  if (!message) {
+    return next(new appError('No message found with this Id', 404))
+  }
+  res.status(200).json({
+    status: 'success',
+    data: null,
+  })
+})
+
+exports.editMessage = catchAsync(async (req, res, next) => {
+  const message = await Message.findOneAndUpdate({
+    $and: [{ user: req.user.id }, { _id: req.params.id }],
+  })
+  if (!message) {
+    return next(new appError('No message found with this Id', 404))
+  }
+  res.status(200).json({
+    status: 'success',
+    data: null,
+  })
+})

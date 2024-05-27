@@ -6,4 +6,9 @@ const router = express.Router({ mergeParams: true })
 
 router.route('/').post(verifyToken, messageController.createMessage)
 
+router
+  .route('/:id')
+  .patch(verifyToken, messageController.editMessage)
+  .delete(verifyToken, messageController.deleteMessage)
+
 module.exports = router
