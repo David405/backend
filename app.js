@@ -33,7 +33,7 @@ app.use('/api/users', authRouter)
 app.use('/api/v1/jobs', jobRouter)
 app.use('/api/v1/applications', applicationRouter)
 app.use('/api/v1/messages', messageRouter)
-app.use('/api/v1/chatsessions', chatSessionRouter)
+app.use('/api/v1/chatSessions', chatSessionRouter)
 
 app.get('/', async (req, res) => {
   try {
@@ -43,6 +43,14 @@ app.get('/', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' })
   }
 })
+//Handling unhandled route
+// app.all('*', (req, res, next) => {
+//   next(new AppError(`Cant find ${req.originalUrl} on this server`, 404))
+// })
+
+// global error handling
+app.use(globalErrorHandler)
+
 //Handling unhandled route
 // app.all('*', (req, res, next) => {
 //   next(new AppError(`Cant find ${req.originalUrl} on this server`, 404))

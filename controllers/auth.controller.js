@@ -219,7 +219,7 @@ async function editUserProfile(req, res) {
   const updatedData = req.body
 
   const decoded = verifyJWToken(token)
-  const email = decoded.email
+  const email = decoded._doc.email
 
   try {
     const user = await User.findOne({ email })
@@ -241,15 +241,17 @@ async function editUserProfile(req, res) {
 async function getUserProfile(req, res) {
   const token = req.headers.authorization?.split(' ')[1]
   const decoded = verifyJWToken(token)
-  const email = decoded.email
+  const email = decoded._doc.email
 
   try {
-    const user = await User.findOne({ email })
+    const user = await User.findOne({ email }).lean()
     if (!user) {
       return res.status(404).send('User not found')
     }
 
-    res.status(200).json(user)
+    const { password, ...userWithoutPassword } = user
+
+    res.status(200).json(userWithoutPassword)
   } catch (error) {
     res.status(500).send(error.message)
   }
