@@ -8,6 +8,10 @@ dotenv.config({ path: './.env' })
 const catchAsync = require('./utils/catchAsync')
 const AppError = require('./utils/appError')
 const globalErrorHandler = require('./controllers/errorController')
+require('./models/message')
+require('./models/chatSession')
+require('./models/user')
+
 const authRouter = require('./routes/auth.routes')
 const jobRouter = require('./routes/jobAd.routes')
 const applicationRouter = require('./routes/application.routes')
@@ -28,7 +32,7 @@ app.use(express.json())
 app.use('/api/users', authRouter)
 app.use('/api/v1/jobs', jobRouter)
 app.use('/api/v1/applications', applicationRouter)
-// app.use('/api/v1/messages', messageRouter)
+app.use('/api/v1/messages', messageRouter)
 app.use('/api/v1/chatsessions', chatSessionRouter)
 
 app.get('/', async (req, res) => {
@@ -60,6 +64,10 @@ const server = app.listen(PORT, () => {
 })
 
 const io = require('socket.io')(server)
+const jwt = require('jsonwebtoken')
+
+const Message = mongoose.model('Message')
+const User = mongoose.model('User')
 
 //authenticating socket.io user
 io.use(
@@ -89,8 +97,35 @@ io.use(
 
 io.on('connection', (socket) => {
   console.log('connected' + socket.userId)
-})
 
-io.on('disconnection', (socket) => {
-  console.log('disconnected' + socket.userId)
+  socket.on('disconnection', (socket) => {
+    console.log('disconnected' + socket.userId)
+  })
+
+  socket.on('joinSession', ({ chatsessionId }) => {
+    socket.join(chatsessionId)
+    console.log('A user joined chatsession:' + chatsessionId)
+  })
+
+  socket.on('leaveSession', ({ chatsessionId }) => {
+    socket.join(chatsessionId)
+    console.log('A user leave chatsession:' + chatsessionId)
+  })
+
+  socket.on('chatsessionMessage', async ({ chatsessionId, message }) => {
+    if (message.trim().length > o) {
+      const user = await User.findOne({ _id: socket.userId })
+      const newMessage = new Message({
+        chatSession: chatsessionId,
+        user: socket.userId,
+        message,
+      })
+      io.to(chatsessionId).emit('newMessage', {
+        message,
+        name: user.name,
+        userId: socket.userId,
+      })
+      await newMessage.save()
+    }
+  })
 })

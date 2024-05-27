@@ -6,8 +6,8 @@ const chatSessionSchema = new mongoose.Schema(
       type: String,
       unique: true,
       trim: true,
-      maxlength: [15, 'A tour name must have less or equal to 15 characters'],
-      minlength: [10, 'A tour name must have more or equal to 10 characters'],
+      maxlength: [15, 'A chat name must have less or equal to 15 characters'],
+      minlength: [10, 'A chat name must have more or equal to 10 characters'],
       required: true,
     },
     user: {
