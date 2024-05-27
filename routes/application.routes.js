@@ -1,6 +1,6 @@
 const express = require('express')
 const applicationController = require('../controllers/applicationController')
-const { verifyToken } = require('./../middleware/auth.middleware')
+const { verifyToken, restrictTo } = require('./../middleware/auth.middleware')
 
 const router = express.Router({ mergeParams: true })
 

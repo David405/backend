@@ -1,17 +1,20 @@
 const express = require('express')
-const chatsessionController = require('../controllers/chatsessionController')
+const chatSessionController = require('../controllers/chatSessionController')
+const { verifyToken, restrictTo } = require('./../middleware/auth.middleware')
 
 const messageRouter = require('./../routes/message.route')
-const { verifyToken } = require('./../middleware/auth.middleware')
 
 const router = express.Router()
+
+router.use(verifyToken) // this will protect all the middlewares below from users that are not logged in
+router.use(restrictTo('Applicant', 'Employer')) // this will protect all the middlewares below from users that are "Applicants"
 
 // get All messages by sessionId ROUTE
 router.use('/:sessionId/messages', messageRouter)
 
 router
   .route('/')
-  .post(verifyToken, chatsessionController.createChatSession)
-  .get(chatsessionController.getAllChatSession)
+  .post(chatSessionController.createChatSession)
+  .get(chatSessionController.getAllChatSession)
 
 module.exports = router
