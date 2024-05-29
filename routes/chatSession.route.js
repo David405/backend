@@ -1,5 +1,5 @@
 const express = require('express')
-const chatSessionController = require('../controllers/chatSessionController')
+const chatSessionController = require('../controllers/chatsessionController')
 const { verifyToken, restrictTo } = require('./../middleware/auth.middleware')
 
 const messageRouter = require('./../routes/message.route')
