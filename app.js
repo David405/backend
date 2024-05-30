@@ -17,6 +17,7 @@ const jobRouter = require('./routes/jobAd.routes')
 const applicationRouter = require('./routes/application.routes')
 const messageRouter = require('./routes/message.route')
 const chatSessionRouter = require('./routes/chatSession.route')
+const chatEvents = require('./utils/chatEvents')
 
 const app = express()
 
@@ -103,37 +104,40 @@ io.use(
   }),
 )
 
-io.on('connection', (socket) => {
-  console.log('connected' + socket.userId)
+io.on(chatEvents.connection, (socket) => {
+  console.log('connection' + socket.userId)
 
-  socket.on('disconnection', (socket) => {
+  socket.on(chatEvents.disconnection, (socket) => {
     console.log('disconnected' + socket.userId)
   })
 
-  socket.on('joinSession', ({ chatsessionId }) => {
-    socket.join(chatsessionId)
-    console.log('A user joined chatsession:' + chatsessionId)
+  socket.on(chatEvents.joinSession, ({ chatSessionId }) => {
+    socket.join(chatSessionId)
+    console.log('A user joined chatsession:' + chatSessionId)
   })
 
-  socket.on('leaveSession', ({ chatsessionId }) => {
-    socket.join(chatsessionId)
-    console.log('A user leave chatsession:' + chatsessionId)
+  socket.on(chatEvents.leaveSession, ({ chatSessionId }) => {
+    socket.join(chatSessionId)
+    console.log('A user left chatSession:' + chatSessionId)
   })
 
-  socket.on('chatsessionMessage', async ({ chatsessionId, message }) => {
-    if (message.trim().length > o) {
-      const user = await User.findOne({ _id: socket.userId })
-      const newMessage = new Message({
-        chatSession: chatsessionId,
-        user: socket.userId,
-        message,
-      })
-      io.to(chatsessionId).emit('newMessage', {
-        message,
-        name: user.name,
-        userId: socket.userId,
-      })
-      await newMessage.save()
-    }
-  })
+  socket.on(
+    chatEvents.chatSessionMessage,
+    async ({ chatSessionId, message }) => {
+      if (message.trim().length > 0) {
+        const user = await User.findOne({ _id: socket.userId })
+        const newMessage = new Message({
+          chatSession: chatSessionId,
+          user: socket.userId,
+          message,
+        })
+        io.to(chatSessionId).emit(chatEvents.newMessage, {
+          message,
+          name: user.name,
+          userId: socket.userId,
+        })
+        await newMessage.save()
+      }
+    },
+  )
 })
