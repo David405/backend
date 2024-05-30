@@ -149,9 +149,9 @@ exports.cancelApplication = catchAsync(async (req, res, next) => {
   const application = await Application.findOne({
     $and: [{ user: id }, { jobAdId: jobId }],
   })
-  console.log(application.id)
+  // console.log(application.id)
 
-  const updatedAppplication = await Application.findByIdAndUpdate(
+  await Application.findByIdAndUpdate(
     application.id,
     {
       isCancelled: true,
@@ -166,7 +166,7 @@ exports.cancelApplication = catchAsync(async (req, res, next) => {
 
   res.status(204).json({
     status: 'success',
-    data: application,
+    data: null,
   })
   // console.log(application)
 })
