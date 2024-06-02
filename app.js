@@ -4,6 +4,7 @@ const cors = require('cors')
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
 dotenv.config({ path: './.env' })
+const { promisify } = require('util')
 
 const catchAsync = require('./utils/catchAsync')
 const AppError = require('./utils/appError')
