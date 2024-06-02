@@ -27,7 +27,7 @@ if ((process.env.NODE_ENV = 'development')) {
   app.use(morgan('dev'))
 }
 
-app.use(cors())
+// app.use(cors())
 
 app.use(express.json())
 
@@ -73,13 +73,14 @@ const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)
 })
 
-const io = new Server(server, {
+const io = new Server(app, {
   cors: {
     origin: '*',
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type'],
   },
 })
+
 const jwt = require('jsonwebtoken')
 
 const Message = mongoose.model('Message')
@@ -89,11 +90,7 @@ const User = mongoose.model('User')
 io.use(
   catchAsync(async (socket, next) => {
     const token = socket.handshake.query.token
-    // 2)verify the token
     const decoded = await promisify(jwt.verify)(token, JWT_SECRET)
-    // console.log({ decoded })
-    // console.log(decoded['$__']._id)
-    // 3)check if the user accessing the route still exist
     const currentUser = await User.findById(decoded['$__']._id)
     if (!currentUser) {
       return next(
