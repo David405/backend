@@ -18,6 +18,7 @@ const applicationRouter = require('./routes/application.routes')
 const messageRouter = require('./routes/message.route')
 const chatSessionRouter = require('./routes/chatSession.route')
 const chatEvents = require('./utils/chatEvents')
+const { Server } = require('socket.io')
 
 const app = express()
 
@@ -72,7 +73,7 @@ const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)
 })
 
-const io = require('socket.io')(server, {
+const io = new Server(server, {
   cors: {
     origin: 'http://localhost:3000',
   },
