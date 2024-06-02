@@ -72,7 +72,11 @@ const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)
 })
 
-const io = require('socket.io')(server)
+const io = require('socket.io')(server, {
+  cors: {
+    origin: 'http://localhost:3000',
+  },
+})
 const jwt = require('jsonwebtoken')
 
 const Message = mongoose.model('Message')
