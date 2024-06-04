@@ -2,8 +2,10 @@ const { promisify } = require('util') //builtin function for promifying token ve
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const http = require('http')
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
+
 dotenv.config({ path: './.env' })
 
 const catchAsync = require('./utils/catchAsync')
@@ -22,6 +24,8 @@ const chatEvents = require('./utils/chatEvents')
 const { Server } = require('socket.io')
 
 const app = express()
+
+const server = http.createServer(app)
 
 // global middleware
 if ((process.env.NODE_ENV = 'development')) {
@@ -70,11 +74,15 @@ db.once('open', () => {
 })
 
 const PORT = process.env.PORT || 3000
-const server = app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)
 })
 
-const io = new Server(server)
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+  },
+})
 
 const jwt = require('jsonwebtoken')
 
@@ -86,18 +94,18 @@ io.use(
   catchAsync(async (socket, next) => {
     const token = socket.handshake.query.token
     const decoded = await promisify(jwt.verify)(token, JWT_SECRET)
-    // const currentUser = await User.findById(decoded['$__']._id)
-    // if (!currentUser) {
-    //   return next(
-    //     new AppError(
-    //       'The User belonging to this token does not exist anylonger',
-    //       401,
-    //     ),
-    //   )
-    // }
+    const currentUser = await User.findById(decoded['$__']._id)
+    if (!currentUser) {
+      return next(
+        new AppError(
+          'The User belonging to this token does not exist anylonger',
+          401,
+        ),
+      )
+    }
 
     // GRANT ACCESS TO PROTECTED ROUTE
-    req.user = decoded['$__']._id
+    req.user = currentUser
     socket.userId = req.user.id
     next()
   }),
