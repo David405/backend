@@ -1,7 +1,7 @@
 const crypto = require('crypto')
 const jwt = require('jsonwebtoken')
 
-export const JWT_SECRET = process.env.SECRET_KEY
+const JWT_SECRET = process.env.SECRET_KEY
 
 function generateToken() {
   return crypto.randomBytes(20).toString('hex')
