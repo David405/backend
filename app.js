@@ -6,8 +6,6 @@ const http = require('http')
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
 
-dotenv.config({ path: './.env' })
-
 const catchAsync = require('./utils/catchAsync')
 const AppError = require('./utils/appError')
 const globalErrorHandler = require('./controllers/errorController')
@@ -21,8 +19,12 @@ const applicationRouter = require('./routes/application.routes')
 const messageRouter = require('./routes/message.route')
 const chatSessionRouter = require('./routes/chatSession.route')
 const chatEvents = require('./utils/chatEvents')
+
+const jwt = require('jsonwebtoken')
+const { JWT_SECRET } = require('./helpers/token.generator')
 const { Server } = require('socket.io')
 
+dotenv.config({ path: './.env' })
 const app = express()
 
 const server = http.createServer(app)
@@ -83,8 +85,6 @@ const io = new Server(server, {
     origin: '*',
   },
 })
-
-const jwt = require('jsonwebtoken')
 
 const Message = mongoose.model('Message')
 const User = mongoose.model('User')
