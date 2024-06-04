@@ -86,18 +86,18 @@ io.use(
   catchAsync(async (socket, next) => {
     const token = socket.handshake.query.token
     const decoded = await promisify(jwt.verify)(token, JWT_SECRET)
-    const currentUser = await User.findById(decoded['$__']._id)
-    if (!currentUser) {
-      return next(
-        new AppError(
-          'The User belonging to this token does not exist anylonger',
-          401,
-        ),
-      )
-    }
+    // const currentUser = await User.findById(decoded['$__']._id)
+    // if (!currentUser) {
+    //   return next(
+    //     new AppError(
+    //       'The User belonging to this token does not exist anylonger',
+    //       401,
+    //     ),
+    //   )
+    // }
 
     // GRANT ACCESS TO PROTECTED ROUTE
-    req.user = currentUser
+    req.user = decoded['$__']._id
     socket.userId = req.user.id
     next()
   }),
