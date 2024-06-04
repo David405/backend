@@ -21,8 +21,8 @@ const chatSessionRouter = require('./routes/chatSession.route')
 const chatEvents = require('./utils/chatEvents')
 
 const jwt = require('jsonwebtoken')
-const { JWT_SECRET } = require('./helpers/token.generator')
 const { Server } = require('socket.io')
+const JWT_SECRET = process.env.SECRET_KEY
 
 dotenv.config({ path: './.env' })
 const app = express()
