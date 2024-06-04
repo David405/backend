@@ -80,11 +80,7 @@ server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)
 })
 
-const io = new Server(server, {
-  cors: {
-    origin: '*',
-  },
-})
+const io = new Server(server)
 
 const Message = mongoose.model('Message')
 const User = mongoose.model('User')
