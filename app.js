@@ -39,10 +39,15 @@ app.use(
   cors({
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    headers: ['Content-Type', 'Authorization', 'Access-Control-Allow-Origin'],
+    headers: ['Content-Type', 'Authorization'],
     credentials: true,
   }),
 )
+
+app.use((req, res, next) => {
+  res.set('Access-Control-Allow-Origin', '*')
+  next()
+})
 
 app.use(express.json())
 
