@@ -22,6 +22,7 @@ const chatEvents = require('./utils/chatEvents')
 
 const jwt = require('jsonwebtoken')
 const { Server } = require('socket.io')
+
 const JWT_SECRET = process.env.SECRET_KEY
 
 dotenv.config({ path: './.env' })
