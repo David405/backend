@@ -4,11 +4,12 @@ const jwt = require('jsonwebtoken')
 const catchAsync = require('./../utils/catchAsync')
 const AppError = require('./../utils/appError')
 const { User } = require('./../models/user')
-const JWT_SECRET = process.env.SECRET_KEY
 
 // PROTECT MIDDLEWARE
 exports.verifyToken = catchAsync(async (req, res, next) => {
   // 1)Getting token and check if it exist
+
+  const JWT_SECRET = process.env.SECRET_KEY
   let token
   if (
     req.headers.authorization &&
