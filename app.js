@@ -82,7 +82,7 @@ server.listen(PORT, () => {
 
 const io = new Server(server, {
   cors: {
-    origin: '*', // Replace with your allowed origins
+    origin: '*',
     methods: ['GET', 'POST'],
     allowedHeaders: ['Authorization'],
     credentials: true,
