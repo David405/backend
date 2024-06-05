@@ -99,7 +99,7 @@ server.listen(PORT, () => {
 
 const io = new Server(server)
 
-io.origins('*:*')
+io.origin('*:*')
 
 const Message = mongoose.model('Message')
 const User = mongoose.model('User')
