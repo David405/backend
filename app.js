@@ -49,6 +49,12 @@ app.use((req, res, next) => {
   next()
 })
 
+app.get('/socket.io/', cors({ origin: '*' }), (req, res) => {
+  // ...
+})
+
+io.origins('*:*')
+
 app.use(express.json())
 
 app.use('/api/users', authRouter)
