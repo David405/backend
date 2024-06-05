@@ -53,8 +53,6 @@ app.get('/socket.io/', cors({ origin: '*' }), (req, res) => {
   // ...
 })
 
-io.origins('*:*')
-
 app.use(express.json())
 
 app.use('/api/users', authRouter)
@@ -100,6 +98,8 @@ server.listen(PORT, () => {
 })
 
 const io = new Server(server)
+
+io.origins('*:*')
 
 const Message = mongoose.model('Message')
 const User = mongoose.model('User')
