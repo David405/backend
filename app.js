@@ -37,7 +37,7 @@ if ((process.env.NODE_ENV = 'development')) {
 
 app.use(
   cors({
-    origin: 'http://localhost:3000', // Replace with your allowed origins
+    origin: 'http://localhost:3000',
     methods: ['GET', 'POST', 'DELETE', 'PATCH'],
     allowedHeaders: [
       'Authorization',
@@ -94,14 +94,7 @@ server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)
 })
 
-const io = new Server(server, {
-  cors: {
-    origin: 'http://localhost:3000', // Replace with your allowed origins
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Authorization', 'Content-Type'],
-    credentials: true,
-  },
-})
+const io = new Server(server)
 
 const Message = mongoose.model('Message')
 const User = mongoose.model('User')
