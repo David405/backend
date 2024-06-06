@@ -42,15 +42,6 @@ app.use(
   }),
 )
 
-app.use((req, res, next) => {
-  res.set('Access-Control-Allow-Origin', '*')
-  next()
-})
-
-app.get('/socket.io/', cors({ origin: '*' }), (req, res) => {
-  // ...
-})
-
 app.use(express.json())
 
 app.use('/api/users', authRouter)
