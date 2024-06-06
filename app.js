@@ -195,17 +195,14 @@ if ((process.env.NODE_ENV = 'development')) {
   app.use(morgan('dev'))
 }
 
-// app.use(
-//   cors({
-//     origin: '*', // Replace with your allowed origins
-//     methods: ['GET', 'POST', 'DELETE', 'PATCH'],
-//     allowedHeaders: ['Authorization', 'Content-Type'],
-//     credentials: true,
-//   }),
-// )
-
-
-app.use(cors())
+app.use(
+  cors({
+    origin: '*', // Replace with your allowed origins
+    methods: ['GET', 'POST', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Authorization', 'Content-Type'],
+    credentials: true,
+  }),
+)
 
 
 app.use(express.json())
