@@ -5,11 +5,12 @@ const catchAsync = require('./../utils/catchAsync')
 const AppError = require('./../utils/appError')
 const { User } = require('./../models/user')
 
+const JWT_SECRET = process.env.SECRET_KEY
+
 // PROTECT MIDDLEWARE
 exports.verifyToken = catchAsync(async (req, res, next) => {
   // 1)Getting token and check if it exist
 
-  const JWT_SECRET = process.env.SECRET_KEY
   let token
   if (
     req.headers.authorization &&
@@ -27,8 +28,6 @@ exports.verifyToken = catchAsync(async (req, res, next) => {
   }
   // 2)verify the token
   const decoded = await promisify(jwt.verify)(token, JWT_SECRET)
-  // console.log({ decoded })
-  // console.log(decoded['$__']._id)
   // 3)check if the user accessing the route still exist
   const currentUser = await User.findById(decoded['$__']._id)
   if (!currentUser) {
