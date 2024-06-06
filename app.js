@@ -189,7 +189,6 @@ const JWT_SECRET = process.env.SECRET_KEY
 dotenv.config({ path: './.env' })
 const app = express()
 
-const server = http.createServer(app)
 
 // global middleware
 if ((process.env.NODE_ENV = 'development')) {
@@ -236,6 +235,9 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'))
 db.once('open', () => {
   console.log('Connected to MongoDB')
 })
+
+
+const server = http.createServer(app)
 
 const PORT = process.env.PORT || 3000
 server.listen(PORT, () => {
