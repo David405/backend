@@ -197,7 +197,7 @@ if ((process.env.NODE_ENV = 'development')) {
 
 app.use(
   cors({
-    origin: '*', // Replace with your allowed origins
+    origin: 'http://localhost:3000', // Replace with your allowed origins
     methods: ['GET', 'POST', 'DELETE', 'PATCH'],
     allowedHeaders: ['Authorization', 'Content-Type'],
     credentials: true,
