@@ -121,8 +121,7 @@ io.use(
       )
     }
     // GRANT ACCESS TO PROTECTED ROUTE
-    req.user = currentUser
-    socket.userId = req.user.id
+    socket.userId = currentUser
     next()
   }),
 )
