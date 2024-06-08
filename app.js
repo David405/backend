@@ -38,6 +38,7 @@ if ((process.env.NODE_ENV = 'development')) {
 }
 
 app.use(express.json())
+app.use(cors())
 
 app.use('/api/users', authRouter)
 app.use('/api/v1/jobs', jobRouter)
@@ -95,6 +96,7 @@ const User = mongoose.model('User')
 io.use(
   catchAsync(async (socket, next) => {
     const namespace = socket.nsp
+    console.log(namespace)
     if (namespace === '/authenticated') {
       const token = socket.handshake.query.token
       const decoded = await promisify(jwt.verify)(token, JWT_SECRET)
