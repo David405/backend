@@ -13,7 +13,10 @@ exports.createChatSession = catchAsync(async (req, res, next) => {
 })
 
 exports.getAllChatSession = catchAsync(async (req, res, next) => {
-  const ChatSessions = await ChatSession.find()
+  const ChatSessions = await ChatSession.find().populate({
+    path: 'user',
+    select: 'email photo first_name last_name phone_number is_employer',
+  })
 
   res.status(200).json({
     count: ChatSessions.length,
