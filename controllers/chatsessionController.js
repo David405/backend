@@ -1,8 +1,14 @@
 const ChatSession = require('../models/chatSession')
 const catchAsync = require('../utils/catchAsync')
-const appError = require('../utils/appError')
+const AppError = require('../utils/appError')
 
 exports.createChatSession = catchAsync(async (req, res, next) => {
+  const { users } = req.body
+  if (users.length !== 2)
+    return next(
+      new AppError('A chat session must include exactly two users.', 400),
+    )
+
   const newChatSession = await ChatSession.create(req.body)
   res.status(201).json({
     status: 'success',
@@ -14,7 +20,7 @@ exports.createChatSession = catchAsync(async (req, res, next) => {
 
 exports.getAllChatSession = catchAsync(async (req, res, next) => {
   const ChatSessions = await ChatSession.find().populate({
-    path: 'user',
+    path: 'users',
     select: 'email photo first_name last_name phone_number is_employer _id',
   })
 
