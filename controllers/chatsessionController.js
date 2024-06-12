@@ -27,18 +27,10 @@ exports.getAllChatSession = catchAsync(async (req, res, next) => {
     select: 'email photo first_name last_name phone_number is_employer _id',
   })
 
-  // const _chatSessions = chatSessions.filter((session) => {
-  //   if (session.users.length > 0) {
-  //     console.log(session.users)
-  //     return session.users.filter((user) => user._id === userId)
-  //   }
-  // })
-
   const _chatSessions = chatSessions.filter((session) =>
     session.users.some((user) => user._id.equals(userId)),
   )
 
-  console.log('MAIN:::::', _chatSessions)
   res.status(200).json({
     count: chatSessions.length,
     status: 'success',
