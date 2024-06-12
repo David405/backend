@@ -1,6 +1,7 @@
 const ChatSession = require('../models/chatSession')
 const catchAsync = require('../utils/catchAsync')
 const AppError = require('../utils/appError')
+const mongoose = require('mongoose')
 
 exports.createChatSession = catchAsync(async (req, res, next) => {
   const { users } = req.body
@@ -19,16 +20,30 @@ exports.createChatSession = catchAsync(async (req, res, next) => {
 })
 
 exports.getAllChatSession = catchAsync(async (req, res, next) => {
-  const ChatSessions = await ChatSession.find().populate({
+  const userId = mongoose.Types.ObjectId(req.user._id)
+
+  const chatSessions = await ChatSession.find().populate({
     path: 'users',
     select: 'email photo first_name last_name phone_number is_employer _id',
   })
 
+  // const _chatSessions = chatSessions.filter((session) => {
+  //   if (session.users.length > 0) {
+  //     console.log(session.users)
+  //     return session.users.filter((user) => user._id === userId)
+  //   }
+  // })
+
+  const _chatSessions = chatSessions.filter((session) =>
+    session.users.some((user) => user._id.equals(userId)),
+  )
+
+  console.log('MAIN:::::', _chatSessions)
   res.status(200).json({
-    count: ChatSessions.length,
+    count: chatSessions.length,
     status: 'success',
     data: {
-      ChatSessions,
+      chatSessions: _chatSessions,
     },
   })
 })
