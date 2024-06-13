@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
   education: [Object],
   photo: { type: String, default: 'default.jpg' },
   professional_experience: [Object],
+  totalScore: { type: Number, default: 0 }
 })
 
 const User = mongoose.model('User', userSchema)

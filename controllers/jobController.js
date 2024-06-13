@@ -67,6 +67,7 @@ exports.createJob = catchAsync(async (req, res, next) => {
     category: req.body.category,
     description: req.body.description,
     responsibility: req.body.responsibility,
+    keywords: req.body.keywords,
     requirement: req.body.requirement,
   })
 
