@@ -2,12 +2,13 @@ const { promisify } = require('util') //builtin function for promifying token ve
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const http = require('http')
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
-dotenv.config({ path: './.env' })
 
 const catchAsync = require('./utils/catchAsync')
 const AppError = require('./utils/appError')
+
 const globalErrorHandler = require('./controllers/errorController')
 require('./models/message')
 require('./models/chatSession')
@@ -19,18 +20,25 @@ const applicationRouter = require('./routes/application.routes')
 const messageRouter = require('./routes/message.route')
 const chatSessionRouter = require('./routes/chatSession.route')
 const chatEvents = require('./utils/chatEvents')
+
+dotenv.config({ path: './.env' })
+
+const jwt = require('jsonwebtoken')
 const { Server } = require('socket.io')
 
+const JWT_SECRET = process.env.SECRET_KEY
+
 const app = express()
+
+const server = http.createServer(app)
 
 // global middleware
 if ((process.env.NODE_ENV = 'development')) {
   app.use(morgan('dev'))
 }
 
-app.use(cors())
-
 app.use(express.json())
+app.use(cors())
 
 app.use('/api/users', authRouter)
 app.use('/api/v1/jobs', jobRouter)
@@ -70,13 +78,16 @@ db.once('open', () => {
 })
 
 const PORT = process.env.PORT || 3000
-const server = app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)
 })
 
-const io = new Server(server)
-
-const jwt = require('jsonwebtoken')
+const io = new Server(server, {
+  cors: {
+    origin: 'http://localhost:3000',
+    credentials: true,
+  },
+})
 
 const Message = mongoose.model('Message')
 const User = mongoose.model('User')
@@ -84,21 +95,23 @@ const User = mongoose.model('User')
 //authenticating socket.io user
 io.use(
   catchAsync(async (socket, next) => {
-    const token = socket.handshake.query.token
-    const decoded = await promisify(jwt.verify)(token, JWT_SECRET)
-    const currentUser = await User.findById(decoded['$__']._id)
-    if (!currentUser) {
-      return next(
-        new AppError(
-          'The User belonging to this token does not exist anylonger',
-          401,
-        ),
-      )
+    const namespace = socket.nsp
+    console.log(namespace)
+    if (namespace === '/authenticated') {
+      const token = socket.handshake.query.token
+      const decoded = await promisify(jwt.verify)(token, JWT_SECRET)
+      const currentUser = await User.findById(decoded['$__']._id)
+      if (!currentUser) {
+        return next(
+          new AppError(
+            'The User belonging to this token does not exist anylonger',
+            401,
+          ),
+        )
+      }
+      // GRANT ACCESS TO PROTECTED ROUTE
+      socket.userId = currentUser
     }
-
-    // GRANT ACCESS TO PROTECTED ROUTE
-    req.user = currentUser
-    socket.userId = req.user.id
     next()
   }),
 )
