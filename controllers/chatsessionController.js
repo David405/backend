@@ -17,7 +17,7 @@ exports.createChatSession = catchAsync(async (req, res, next) => {
       ChatSession: newChatSession,
     },
   })
-});
+})
 
 exports.getAllChatSession = catchAsync(async (req, res, next) => {
   const userId = mongoose.Types.ObjectId(req.user.id)
@@ -34,4 +34,4 @@ exports.getAllChatSession = catchAsync(async (req, res, next) => {
       chatSessions,
     },
   })
-});
+})
