@@ -10,7 +10,7 @@ exports.createChatSession = catchAsync(async (req, res, next) => {
       ChatSession: newChatSession,
     },
   })
-})
+});
 
 exports.getAllChatSession = catchAsync(async (req, res, next) => {
   const ChatSessions = await ChatSession.find()
@@ -22,4 +22,4 @@ exports.getAllChatSession = catchAsync(async (req, res, next) => {
       ChatSessions,
     },
   })
-})
+});

@@ -43,7 +43,7 @@ app.get('/', async (req, res) => {
     res.json({ message: 'Hello, world!' })
   } catch (error) {
     console.error('Error executing query', error)
-    res.status(500).json({ message: 'Internal server error' })
+    res.status(500).json({ message: `Internal server error: ${error}` })
   }
 })
 //Handling unhandled route

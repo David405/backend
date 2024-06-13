@@ -320,5 +320,5 @@ module.exports = {
   getAllUsers,
   uploadUserPhoto,
   resizeUserPhoto,
-  updateMe,
+  updateMe
 }

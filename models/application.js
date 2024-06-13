@@ -69,11 +69,15 @@ const applicantSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
-
+    score: {
+      type: Number,
+      default: 0
+    },
     appliedOn: {
       type: Date,
       default: Date.now(),
     },
+
   },
   {
     toJSON: { virtuals: true },
