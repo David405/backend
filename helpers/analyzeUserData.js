@@ -115,7 +115,7 @@ async function readFileFromUrl(url) {
     try {
         await downloadFile(url, tempFilePath);
         const userData = await readFile(tempFilePath);
-        fs.unlinkSync(tempFilePath); // Delete the temporary file after processing
+        fs.unlinkSync(tempFilePath); 
         return userData;
     } catch (error) {
         console.error('Error processing file from URL:', error.message);
