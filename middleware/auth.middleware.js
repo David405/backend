@@ -1,4 +1,4 @@
-const { promisify } = require('util') //builtin function for promifying token verification
+const { promisify } = require('util') // builtin function for promifying token verification
 const { Request, Response, NextFunction } = require('express')
 const jwt = require('jsonwebtoken')
 const catchAsync = require('./../utils/catchAsync')
@@ -10,7 +10,6 @@ const JWT_SECRET = process.env.SECRET_KEY
 // PROTECT MIDDLEWARE
 exports.verifyToken = catchAsync(async (req, res, next) => {
   // 1)Getting token and check if it exist
-
   let token
   if (
     req.headers.authorization &&
@@ -21,7 +20,6 @@ exports.verifyToken = catchAsync(async (req, res, next) => {
     token = req.cookie.jwt
   }
   if (!token) {
-    // console.log(token);
     return next(
       new AppError('you are not logged please login to get access', 401),
     )

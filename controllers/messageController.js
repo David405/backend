@@ -20,6 +20,7 @@ exports.createMessage = catchAsync(async (req, res, next) => {
     },
   })
 })
+
 exports.getAllMessages = catchAsync(async (req, res, next) => {
   let filter = {}
   if (req.params.sessionId) filter = { chatSession: req.params.sessionId }

@@ -14,9 +14,13 @@ const userSchema = new mongoose.Schema({
   is_email_verified: { type: Boolean, default: false },
   skills: [String],
   education: [Object],
-  photo: { type: String, default: 'default.jpg' },
+  photo: {
+    type: String,
+    default:
+      'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png',
+  },
   professional_experience: [Object],
-  totalScore: { type: Number, default: 0 }
+  totalScore: { type: Number, default: 0 },
 })
 
 const User = mongoose.model('User', userSchema)

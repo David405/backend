@@ -6,6 +6,7 @@ const messageSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'ChatSession',
       required: true,
+      index: true,
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
