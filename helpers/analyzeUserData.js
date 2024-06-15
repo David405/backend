@@ -61,6 +61,16 @@ function extractUserData(text) {
     const education = extractEducation(educationMatch ? educationMatch[0] : '');
     const skills = skillsMatch ? skillsMatch[0].replace(/Skills/gi, '').trim() : 'Not found';
 
+    console.log({
+        email,
+        name,
+        github: `https://github.com/${github}`,
+        linkedin: `https://www.linkedin.com/in/${linkedin}`,
+        skills,
+        experience,
+        education,
+    })
+
     return {
         email,
         name,
@@ -105,7 +115,7 @@ async function readFileFromUrl(url) {
     try {
         await downloadFile(url, tempFilePath);
         const userData = await readFile(tempFilePath);
-        fs.unlinkSync(tempFilePath); // Delete the temporary file after processing
+        fs.unlinkSync(tempFilePath); 
         return userData;
     } catch (error) {
         console.error('Error processing file from URL:', error.message);

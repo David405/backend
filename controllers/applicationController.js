@@ -89,7 +89,9 @@ exports.createApplication = catchAsync(async (req, res, next) => {
     ].indexOf(month.toLowerCase())
   }
 
-  const totalScore = skillsScore + experienceScore + totalYearsOfExperience * 2
+  console.log(skillsScore, experienceScore, totalYearsOfExperience)
+
+  const totalScore = skillsScore + experienceScore + totalYearsOfExperience
 
   const newApplication = await Application.create({
     gender: req.body.gender,
