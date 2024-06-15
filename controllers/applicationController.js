@@ -180,20 +180,9 @@ exports.updateApplication = catchAsync(async (req, res, next) => {
 exports.cancelApplication = catchAsync(async (req, res, next) => {
   const id = req.user.id
   const jobId = req.body.jobAdId
-  // .log(id)
-  // const application = await Application.find(
-  //   (id) => id.toString() === jobId.toString(),
-  // )
-  // console.log(application)
-
-  // const application = await Application.findOne(
-  //   { user: id },
-  //   { jobAdId: jobId },
-  // )
   const application = await Application.findOne({
     $and: [{ user: id }, { jobAdId: jobId }],
   })
-  // console.log(application.id)
 
   await Application.findByIdAndUpdate(
     application.id,
@@ -206,11 +195,9 @@ exports.cancelApplication = catchAsync(async (req, res, next) => {
   if (!application) {
     return next(new appError('No application found with this Id', 404))
   }
-  // console.log(updatedAppplication)
 
   res.status(204).json({
     status: 'success',
     data: null,
   })
-  // console.log(application)
 })
