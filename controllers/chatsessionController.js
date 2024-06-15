@@ -17,25 +17,21 @@ exports.createChatSession = catchAsync(async (req, res, next) => {
       ChatSession: newChatSession,
     },
   })
-});
+})
 
 exports.getAllChatSession = catchAsync(async (req, res, next) => {
-  const userId = mongoose.Types.ObjectId(req.user._id)
+  const userId = mongoose.Types.ObjectId(req.user.id)
 
-  const chatSessions = await ChatSession.find().populate({
+  const chatSessions = await ChatSession.find({ users: userId }).populate({
     path: 'users',
     select: 'email photo first_name last_name phone_number is_employer _id',
   })
-
-  const _chatSessions = chatSessions.filter((session) =>
-    session.users.some((user) => user._id.equals(userId)),
-  )
 
   res.status(200).json({
     count: chatSessions.length,
     status: 'success',
     data: {
-      chatSessions: _chatSessions,
+      chatSessions,
     },
   })
-});
+})
