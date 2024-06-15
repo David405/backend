@@ -2,10 +2,7 @@ const Application = require('../models/application')
 const JobAd = require('../models/job.Ad')
 const catchAsync = require('../utils/catchAsync')
 const appError = require('../utils/appError')
-const {
-  readFileFromUrl,
-  extractUserDataWithScore,
-} = require('../helpers/analyzeUserData')
+const { readFileFromUrl } = require('../helpers/analyzeUserData')
 // functions that will filter out fields tha we dont want to update
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {}
