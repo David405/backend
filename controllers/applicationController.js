@@ -38,35 +38,58 @@ exports.createApplication = catchAsync(async (req, res, next) => {
 
   const keywords = job.keywords
 
-  //   const userData = await readFileFromUrl(req.body.resume);
-  //         if (!userData) {
-  //           return next(new appError('Failed to read file from URL', 400))
-  //         }
+  const userData = await readFileFromUrl(req.body.resume)
+  if (!userData) {
+    return next(new appError('Failed to read file from URL', 400))
+  }
 
-  //   const { experience, skills } = userData;
-  //   const skillsScore = keywords.reduce((score, keyword) => score + (skills.toLowerCase().includes(keyword.toLowerCase()) ? 10 : 0), 0);
-  //   const experienceScore = experience.length * 5;
+  const { experience, skills } = userData
+  const skillsScore = keywords.reduce(
+    (score, keyword) =>
+      score + (skills.toLowerCase().includes(keyword.toLowerCase()) ? 10 : 0),
+    0,
+  )
+  const experienceScore = experience.length * 5
 
-  //   const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear()
 
-  //   const totalYearsOfExperience = experience.reduce((total, exp) => {
-  //     const [startMonthYear, endMonthYear] = exp.period.split(' - ');
-  //     const [startMonth, startYear] = startMonthYear.split(' ');
-  //     const startDate = new Date(startYear, getMonthIndex(startMonth));
-  //     const endDate = endMonthYear.toLowerCase() === 'current' ? new Date(currentYear, 11) : new Date(endMonthYear.split(' ')[1], getMonthIndex(endMonthYear.split(' ')[0]));
-  //     const millisecondsInYear = 1000 * 60 * 60 * 24 * 365;
-  //     const yearsOfExperience = (endDate - startDate) / millisecondsInYear;
-  //     return (Math.round(total + yearsOfExperience));
-  // }, 0);
+  const totalYearsOfExperience = experience.reduce((total, exp) => {
+    const [startMonthYear, endMonthYear] = exp.period.split(' - ')
+    const [startMonth, startYear] = startMonthYear.split(' ')
+    const startDate = new Date(startYear, getMonthIndex(startMonth))
+    const endDate =
+      endMonthYear.toLowerCase() === 'current'
+        ? new Date(currentYear, 11)
+        : new Date(
+            endMonthYear.split(' ')[1],
+            getMonthIndex(endMonthYear.split(' ')[0]),
+          )
+    const millisecondsInYear = 1000 * 60 * 60 * 24 * 365
+    const yearsOfExperience = (endDate - startDate) / millisecondsInYear
+    return Math.round(total + yearsOfExperience)
+  }, 0)
 
-  //   const roundedYearsOfExperience = Math.round(totalYearsOfExperience);
+  const roundedYearsOfExperience = Math.round(totalYearsOfExperience)
 
-  //         // Helper function to get the index of a month
-  //         function getMonthIndex(month) {
-  //             return ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'].indexOf(month.toLowerCase());
-  //         }
+  // Helper function to get the index of a month
+  function getMonthIndex(month) {
+    return [
+      'jan',
+      'feb',
+      'mar',
+      'apr',
+      'may',
+      'jun',
+      'jul',
+      'aug',
+      'sep',
+      'oct',
+      'nov',
+      'dec',
+    ].indexOf(month.toLowerCase())
+  }
 
-  //       const totalScore = skillsScore + experienceScore + (totalYearsOfExperience * 2);
+  const totalScore = skillsScore + experienceScore + totalYearsOfExperience * 2
 
   const newApplication = await Application.create({
     gender: req.body.gender,
@@ -77,7 +100,7 @@ exports.createApplication = catchAsync(async (req, res, next) => {
     coverLatter: req.body.coverLatter,
     portfolio: req.body.portfolio,
     jobAdId: req.body.jobAdId,
-    // score: totalScore
+    score: totalScore,
   })
 
   res.status(201).json({
