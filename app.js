@@ -84,8 +84,8 @@ server.listen(PORT, () => {
 
 const io = new Server(server, {
   cors: {
-    credentials: true,
     origin: ['https://agp-careers-dev.netlify.app/', 'http://localhost:3000'],
+    credentials: true,
   },
 })
 
