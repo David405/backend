@@ -1,6 +1,8 @@
 const Message = require('../models/message')
 const catchAsync = require('../utils/catchAsync')
 const appError = require('../utils/appError')
+const redis = require('redis')
+const client = redis.createClient()
 
 // functions that will filter out fields tha we dont want to update
 const filterObj = (obj, ...allowedFields) => {
