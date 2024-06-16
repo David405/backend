@@ -1,8 +1,6 @@
 const Message = require('../models/message')
 const catchAsync = require('../utils/catchAsync')
 const appError = require('../utils/appError')
-const redis = require('redis')
-const client = redis.createClient()
 
 // functions that will filter out fields tha we dont want to update
 const filterObj = (obj, ...allowedFields) => {
@@ -24,6 +22,7 @@ exports.createMessage = catchAsync(async (req, res, next) => {
 })
 
 exports.getAllMessages = catchAsync(async (req, res, next) => {
+  const { getSetCache } = req.app.locals
   let filter = {}
   if (req.params.sessionId) filter = { chatSession: req.params.sessionId }
 
@@ -32,28 +31,19 @@ exports.getAllMessages = catchAsync(async (req, res, next) => {
   const skip = (page - 1) * limit
 
   const cacheKey = `messages:${req.params.sessionId}:${page}:${limit}`
-
-  client.get(cacheKey, async (err, data) => {
-    if (data) {
-      return res.status(200).json({
-        results: JSON.parse(data).length,
-        status: 'success',
-        data: {
-          messages: JSON.parse(data),
-        },
-      })
-    } else {
-      const messages = await Message.find(filter).skip(skip).limit(limit)
-      client.setEx(cacheKey, 3600, JSON.stringify(messages))
-      return res.status(200).json({
-        results: messages.length,
-        status: 'success',
-        data: {
-          messages,
-        },
-      })
-    }
+  const messages = await getSetCache(cacheKey, async () => {
+    console.log('Did not find message')
+    await Message.find(filter).skip(skip).limit(limit)
   })
+
+  console.log({ messages })
+  // return res.status(200).json({
+  //   results: messages.length,
+  //   status: 'success',
+  //   data: {
+  //     messages,
+  //   },
+  // })
 })
 
 exports.deleteMessage = catchAsync(async (req, res, next) => {
@@ -79,8 +69,6 @@ exports.editMessage = catchAsync(async (req, res, next) => {
   if (!message) {
     return next(new appError('No message found ', 404))
   }
-  //   console.log(message.id)
-  //   console.log(message)
 
   const newMessage = await Message.findByIdAndUpdate(message.id, filteredBody, {
     new: true,

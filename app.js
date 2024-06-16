@@ -1,5 +1,6 @@
 const { promisify } = require('util') //builtin function for promifying token verification
 const express = require('express')
+const redis = require('redis')
 const morgan = require('morgan')
 const cors = require('cors')
 const http = require('http')
@@ -29,13 +30,78 @@ const { Server } = require('socket.io')
 const JWT_SECRET = process.env.SECRET_KEY
 
 const app = express()
-
+let redisClient
 const server = http.createServer(app)
 
+;(async () => {
+  redisClient = redis.createClient({
+    url: `rediss://red-cpn9je5ds78s73as2tig:668cl1SmVxZfJqKfZ3lwcMsQByxRKFFK@oregon-redis.render.com:6379`,
+  })
+  redisClient.on('error', (err) => {
+    console.error('Redis client error:', err)
+  })
+
+  redisClient.on('connect', () => {
+    console.log('Connected to Redis')
+  })
+
+  await redisClient.connect()
+})()
+
+const getName = async () => {
+  return new Promise(async (resolve, reject) => {
+    const data = await redisClient.get('name')
+    if (data) {
+      resolve(data)
+    } else {
+      reject(new Error('Could not fetch'))
+    }
+  })
+}
+const name = getName()
+
+console.log(name)
 // global middleware
 if ((process.env.NODE_ENV = 'development')) {
   app.use(morgan('dev'))
 }
+
+// const getSetCache = async (key, cb) => {
+//   return new Promise((resolve, reject) => {
+//     console.log('Hellos inital')
+//     redisClient.get(key, async (error, data) => {
+//       console.log('data:')
+//       if (error) reject(error)
+//       if (data !== null) {
+//         console.log('Hellos after connection')
+//         resolve(JSON.parse(data))
+//       } else {
+//         const freshData = cb()
+//         redisClient.setEx(key, 3600, JSON.stringify(freshData))
+//         resolve(freshData)
+//       }
+//     })
+//   })
+// }
+
+const getSetCache = async (key, cb) => {
+  console.log('Hellos inital')
+  redisClient.get(key, async (error, data) => {
+    console.log('data:')
+    if (error) return error
+    if (!data) {
+      console.log('Hellos after connection')
+      return JSON.parse(data)
+    } else {
+      console.log('Hellos before after connection')
+      const freshData = cb()
+      await redisClient.setEx(key, 3600, JSON.stringify(freshData))
+      return freshData
+    }
+  })
+}
+
+app.locals.getSetCache = getSetCache
 
 app.use(express.json())
 app.use(cors())
@@ -153,3 +219,20 @@ io.on(chatEvents.connection, (socket) => {
     },
   )
 })
+
+// const getSetCache = async (key, cb) => {
+//   return new Promise(async (resolve, reject) => {
+//     redisClient.get(key, async (error, data) => {
+//       if (error) reject(error)
+//       if (data !== null) {
+//         console.log('Hellos')
+//         resolve(JSON.parse(data))
+//       }
+//       const freshData = await cb()
+//       redisClient.setEx(key, 3600, JSON.stringify(freshData))
+//       resolve(freshData)
+//     })
+//   })
+// }
+
+// app.locals.getSetCache = getSetCache
