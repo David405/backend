@@ -24,7 +24,12 @@ exports.createMessage = catchAsync(async (req, res, next) => {
 exports.getAllMessages = catchAsync(async (req, res, next) => {
   let filter = {}
   if (req.params.sessionId) filter = { chatSession: req.params.sessionId }
-  const messages = await Message.find(filter)
+
+  const page = req.query.page * 1 || 1
+  const limit = req.query.limit * 1 || 50
+  const skip = (page - 1) * limit
+
+  const messages = await Message.find(filter).skip(skip).limit(limit)
 
   res.status(200).json({
     results: messages.length,
