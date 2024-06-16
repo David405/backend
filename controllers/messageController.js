@@ -31,14 +31,28 @@ exports.getAllMessages = catchAsync(async (req, res, next) => {
   const limit = req.query.limit * 1 || 50
   const skip = (page - 1) * limit
 
-  const messages = await Message.find(filter).skip(skip).limit(limit)
+  const cacheKey = `messages:${req.params.sessionId}:${page}:${limit}`
 
-  res.status(200).json({
-    results: messages.length,
-    status: 'success',
-    data: {
-      messages,
-    },
+  client.get(cacheKey, async (err, data) => {
+    if (data) {
+      return res.status(200).json({
+        results: JSON.parse(data).length,
+        status: 'success',
+        data: {
+          messages: JSON.parse(data),
+        },
+      })
+    } else {
+      const messages = await Message.find(filter).skip(skip).limit(limit)
+      client.setEx(cacheKey, 3600, JSON.stringify(messages))
+      return res.status(200).json({
+        results: messages.length,
+        status: 'success',
+        data: {
+          messages,
+        },
+      })
+    }
   })
 })
 
