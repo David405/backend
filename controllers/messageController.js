@@ -31,12 +31,12 @@ exports.getAllMessages = catchAsync(async (req, res, next) => {
   const skip = (page - 1) * limit
 
   const cacheKey = `messages:${req.params.sessionId}:${page}:${limit}`
-  const messages = await getSetCache(cacheKey, async () => {
-    console.log('Did not find message')
+
+  const messages = getSetCache(cacheKey, async () => {
     await Message.find(filter).skip(skip).limit(limit)
   })
 
-  console.log({ messages })
+  messages.then((message) => console.log('Message: ' + message))
   // return res.status(200).json({
   //   results: messages.length,
   //   status: 'success',

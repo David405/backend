@@ -29,11 +29,11 @@ const { Server } = require('socket.io')
 
 const JWT_SECRET = process.env.SECRET_KEY
 
-const app = express()
-let redisClient
-const server = http.createServer(app)
+const initializeExpress = async () => {
+  const app = express()
+  let redisClient
+  const server = http.createServer(app)
 
-;(async () => {
   redisClient = redis.createClient({
     url: `rediss://red-cpn9je5ds78s73as2tig:668cl1SmVxZfJqKfZ3lwcMsQByxRKFFK@oregon-redis.render.com:6379`,
   })
@@ -46,193 +46,193 @@ const server = http.createServer(app)
   })
 
   await redisClient.connect()
-})()
 
-const getName = async () => {
-  return new Promise(async (resolve, reject) => {
-    const data = await redisClient.get('name')
-    if (data) {
-      resolve(data)
-    } else {
-      reject(new Error('Could not fetch'))
-    }
-  })
-}
-const name = getName()
-
-console.log(name)
-// global middleware
-if ((process.env.NODE_ENV = 'development')) {
-  app.use(morgan('dev'))
-}
-
-// const getSetCache = async (key, cb) => {
-//   return new Promise((resolve, reject) => {
-//     console.log('Hellos inital')
-//     redisClient.get(key, async (error, data) => {
-//       console.log('data:')
-//       if (error) reject(error)
-//       if (data !== null) {
-//         console.log('Hellos after connection')
-//         resolve(JSON.parse(data))
-//       } else {
-//         const freshData = cb()
-//         redisClient.setEx(key, 3600, JSON.stringify(freshData))
-//         resolve(freshData)
-//       }
-//     })
-//   })
-// }
-
-const getSetCache = async (key, cb) => {
-  console.log('Hellos inital')
-  redisClient.get(key, async (error, data) => {
-    console.log('data:')
-    if (error) return error
-    if (!data) {
-      console.log('Hellos after connection')
-      return JSON.parse(data)
-    } else {
-      console.log('Hellos before after connection')
-      const freshData = cb()
-      await redisClient.setEx(key, 3600, JSON.stringify(freshData))
-      return freshData
-    }
-  })
-}
-
-app.locals.getSetCache = getSetCache
-
-app.use(express.json())
-app.use(cors())
-
-app.use('/api/users', authRouter)
-app.use('/api/v1/jobs', jobRouter)
-app.use('/api/v1/applications', applicationRouter)
-app.use('/api/v1/messages', messageRouter)
-app.use('/api/v1/chatSessions', chatSessionRouter)
-
-app.get('/', async (req, res) => {
-  try {
-    res.json({ message: 'Hello, world!' })
-  } catch (error) {
-    console.error('Error executing query', error)
-    res.status(500).json({ message: `Internal server error: ${error}` })
+  const getName = async () => {
+    return new Promise(async (resolve, reject) => {
+      const data = await redisClient.get('name')
+      if (data) {
+        resolve(data)
+      } else {
+        reject(new Error('Could not fetch'))
+      }
+    })
   }
-})
-//Handling unhandled route
-// app.all('*', (req, res, next) => {
-//   next(new AppError(`Cant find ${req.originalUrl} on this server`, 404))
-// })
+  const name = getName().then((name) => console.log(name))
 
-// global error handling
-app.use(globalErrorHandler)
+  // global middleware
+  if ((process.env.NODE_ENV = 'development')) {
+    app.use(morgan('dev'))
+  }
 
-//Handling unhandled route
-// app.all('*', (req, res, next) => {
-//   next(new AppError(`Cant find ${req.originalUrl} on this server`, 404))
-// })
+  const getSetCache = async (key, cb) => {
+    return new Promise(async (resolve, reject) => {
+      console.log('Hellos inital')
+      await redisClient.get(key, async (error, data) => {
+        console.log('data:')
+        if (error) reject(error)
+        if (data !== null) {
+          console.log('Hellos after connection')
+          resolve(JSON.parse(data))
+        } else {
+          const freshData = cb()
+          console.log('Hellos after connection callback')
+          await redisClient.setEx(key, 3600, JSON.stringify(freshData))
+          resolve(freshData)
+        }
+      })
+    })
+  }
 
-// global error handling
-app.use(globalErrorHandler)
+  function cacheMiddleware(req, res, next) {
+    const { username } = req.params
+    client.get(username, (err, data) => {
+      if (err) throw err
 
-mongoose.connect(process.env.MONGODB_HOST)
-const db = mongoose.connection
-db.on('error', console.error.bind(console, 'MongoDB connection error:'))
-db.once('open', () => {
-  console.log('Connected to MongoDB')
-})
-
-const PORT = process.env.PORT || 3000
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`)
-})
-
-const io = new Server(server, {
-  cors: {
-    origin: 'http://localhost:3000',
-    credentials: true,
-  },
-})
-
-const Message = mongoose.model('Message')
-const User = mongoose.model('User')
-
-//authenticating socket.io user
-io.use(
-  catchAsync(async (socket, next) => {
-    const namespace = socket.nsp
-    console.log(namespace)
-    if (namespace === '/authenticated') {
-      const token = socket.handshake.query.token
-      const decoded = await promisify(jwt.verify)(token, JWT_SECRET)
-      const currentUser = await User.findById(decoded['$__']._id)
-      if (!currentUser) {
-        return next(
-          new AppError(
-            'The User belonging to this token does not exist anylonger',
-            401,
-          ),
-        )
+      if (data !== null) {
+        res.json(composeResponse(username, data, true))
+      } else {
+        next()
       }
-      // GRANT ACCESS TO PROTECTED ROUTE
-      socket.userId = currentUser
+    })
+  }
+
+  app.locals.getSetCache = getSetCache
+
+  app.use(express.json())
+  app.use(cors())
+
+  app.use('/api/users', authRouter)
+  app.use('/api/v1/jobs', jobRouter)
+  app.use('/api/v1/applications', applicationRouter)
+  app.use('/api/v1/messages', messageRouter)
+  app.use('/api/v1/chatSessions', chatSessionRouter)
+
+  app.get('/', async (req, res) => {
+    try {
+      res.json({ message: 'Hello, world!' })
+    } catch (error) {
+      console.error('Error executing query', error)
+      res.status(500).json({ message: `Internal server error: ${error}` })
     }
-    next()
-  }),
-)
+  })
+  //Handling unhandled route
+  // app.all('*', (req, res, next) => {
+  //   next(new AppError(`Cant find ${req.originalUrl} on this server`, 404))
+  // })
 
-io.on(chatEvents.connection, (socket) => {
-  console.log('connection' + socket.userId)
+  // global error handling
+  app.use(globalErrorHandler)
 
-  socket.on(chatEvents.disconnection, (socket) => {
-    console.log('disconnected' + socket.userId)
+  //Handling unhandled route
+  // app.all('*', (req, res, next) => {
+  //   next(new AppError(`Cant find ${req.originalUrl} on this server`, 404))
+  // })
+
+  // global error handling
+  app.use(globalErrorHandler)
+
+  mongoose.connect(process.env.MONGODB_HOST)
+  const db = mongoose.connection
+  db.on('error', console.error.bind(console, 'MongoDB connection error:'))
+  db.once('open', () => {
+    console.log('Connected to MongoDB')
   })
 
-  socket.on(chatEvents.joinSession, ({ chatSessionId }) => {
-    socket.join(chatSessionId)
-    console.log('A user joined chatsession:' + chatSessionId)
+  const PORT = process.env.PORT || 3000
+  server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`)
   })
 
-  socket.on(chatEvents.leaveSession, ({ chatSessionId }) => {
-    socket.join(chatSessionId)
-    console.log('A user left chatSession:' + chatSessionId)
-  })
-
-  socket.on(
-    chatEvents.chatSessionMessage,
-    async ({ chatSessionId, message }) => {
-      if (message.trim().length > 0) {
-        const user = await User.findOne({ _id: socket.userId })
-        const newMessage = new Message({
-          chatSession: chatSessionId,
-          user: socket.userId,
-          message,
-        })
-        io.to(chatSessionId).emit(chatEvents.newMessage, {
-          message,
-          name: user.name,
-          userId: socket.userId,
-        })
-        await newMessage.save()
-      }
+  const io = new Server(server, {
+    cors: {
+      origin: 'http://localhost:3000',
+      credentials: true,
     },
+  })
+
+  const Message = mongoose.model('Message')
+  const User = mongoose.model('User')
+
+  //authenticating socket.io user
+  io.use(
+    catchAsync(async (socket, next) => {
+      const namespace = socket.nsp
+
+      if (namespace === '/authenticated') {
+        const token = socket.handshake.query.token
+        const decoded = await promisify(jwt.verify)(token, JWT_SECRET)
+        const currentUser = await User.findById(decoded['$__']._id)
+        if (!currentUser) {
+          return next(
+            new AppError(
+              'The User belonging to this token does not exist anylonger',
+              401,
+            ),
+          )
+        }
+        // GRANT ACCESS TO PROTECTED ROUTE
+        socket.userId = currentUser
+      }
+      next()
+    }),
   )
-})
 
-// const getSetCache = async (key, cb) => {
-//   return new Promise(async (resolve, reject) => {
-//     redisClient.get(key, async (error, data) => {
-//       if (error) reject(error)
-//       if (data !== null) {
-//         console.log('Hellos')
-//         resolve(JSON.parse(data))
-//       }
-//       const freshData = await cb()
-//       redisClient.setEx(key, 3600, JSON.stringify(freshData))
-//       resolve(freshData)
-//     })
-//   })
-// }
+  io.on(chatEvents.connection, (socket) => {
+    console.log('connection' + socket.userId)
 
-// app.locals.getSetCache = getSetCache
+    socket.on(chatEvents.disconnection, (socket) => {
+      console.log('disconnected' + socket.userId)
+    })
+
+    socket.on(chatEvents.joinSession, ({ chatSessionId }) => {
+      socket.join(chatSessionId)
+      console.log('A user joined chatsession:' + chatSessionId)
+    })
+
+    socket.on(chatEvents.leaveSession, ({ chatSessionId }) => {
+      socket.join(chatSessionId)
+      console.log('A user left chatSession:' + chatSessionId)
+    })
+
+    socket.on(
+      chatEvents.chatSessionMessage,
+      async ({ chatSessionId, message }) => {
+        if (message.trim().length > 0) {
+          const user = await User.findOne({ _id: socket.userId })
+          const newMessage = new Message({
+            chatSession: chatSessionId,
+            user: socket.userId,
+            message,
+          })
+          io.to(chatSessionId).emit(chatEvents.newMessage, {
+            message,
+            name: user.name,
+            userId: socket.userId,
+          })
+          await newMessage.save()
+        }
+      },
+    )
+  })
+
+  // const getSetCache = async (key, cb) => {
+  //   return new Promise(async (resolve, reject) => {
+  //     redisClient.get(key, async (error, data) => {
+  //       if (error) reject(error)
+  //       if (data !== null) {
+  //         console.log('Hellos')
+  //         resolve(JSON.parse(data))
+  //       }
+  //       const freshData = await cb()
+  //       redisClient.setEx(key, 3600, JSON.stringify(freshData))
+  //       resolve(freshData)
+  //     })
+  //   })
+  // }
+
+  // app.locals.getSetCache = getSetCache
+}
+
+initializeExpress()
+  .then()
+  .catch((err) => console.error(err))
