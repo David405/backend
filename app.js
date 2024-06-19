@@ -11,6 +11,7 @@ const catchAsync = require('./utils/catchAsync')
 const AppError = require('./utils/appError')
 
 const globalErrorHandler = require('./controllers/errorController')
+
 require('./models/message')
 require('./models/chatSession')
 require('./models/user')
@@ -28,6 +29,12 @@ const jwt = require('jsonwebtoken')
 const { Server } = require('socket.io')
 
 const JWT_SECRET = process.env.SECRET_KEY
+
+const REDIS_PORT = process.env.REDIS_PORT
+const REDIS_HOST = process.env.REDIS_HOST
+const REDIS_PASSWORD = process.env.REDIS_PASSWORD
+const REDIS_USER = process.env.REDIS_USER
+
 const app = express()
 let redisClient
 
@@ -37,7 +44,8 @@ const initializeExpress = async () => {
   const server = http.createServer(app)
 
   redisClient = redis.createClient({
-    url: `rediss://red-cpn9je5ds78s73as2tig:668cl1SmVxZfJqKfZ3lwcMsQByxRKFFK@oregon-redis.render.com:6379`,
+    // url: `rediss://red-cpn9je5ds78s73as2tig:668cl1SmVxZfJqKfZ3lwcMsQByxRKFFK@oregon-redis.render.com:6379`,
+    url: `rediss://${REDIS_USER}:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}`,
   })
   redisClient.on('error', (err) => {
     console.error('Redis client error:', err)
