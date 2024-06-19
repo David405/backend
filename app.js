@@ -36,12 +36,12 @@ const REDIS_PASSWORD = process.env.REDIS_PASSWORD
 const REDIS_USER = process.env.REDIS_USER
 
 const app = express()
-let redisClient
 
-app.locals.redisClient = redisClient
-
+const server = http.createServer(app)
 const initializeExpress = async () => {
-  const server = http.createServer(app)
+  let redisClient
+
+  app.locals.redisClient = redisClient
 
   redisClient = redis.createClient({
     url: `rediss://${REDIS_USER}:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}`,
@@ -66,7 +66,7 @@ const initializeExpress = async () => {
   app.use(express.json())
   app.use(cors())
 
-  app.use('/api/users', authRouter)
+  app.use('/api/v1/users', authRouter)
   app.use('/api/v1/jobs', jobRouter)
   app.use('/api/v1/applications', applicationRouter)
   app.use('/api/v1/messages', messageRouter)
