@@ -110,7 +110,7 @@ const initializeExpress = async () => {
 
   const io = new Server(server, {
     cors: {
-      origin: 'http://localhost:3000',
+      origin: ['https://agp-careers-dev.netlify.app', 'http://localhost:3000'],
       credentials: true,
     },
   })
