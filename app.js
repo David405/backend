@@ -28,10 +28,12 @@ const jwt = require('jsonwebtoken')
 const { Server } = require('socket.io')
 
 const JWT_SECRET = process.env.SECRET_KEY
+const app = express()
+let redisClient
+
+app.locals.redisClient = redisClient
 
 const initializeExpress = async () => {
-  const app = express()
-  let redisClient
   const server = http.createServer(app)
 
   redisClient = redis.createClient({
@@ -47,56 +49,12 @@ const initializeExpress = async () => {
 
   await redisClient.connect()
 
-  const getName = async () => {
-    return new Promise(async (resolve, reject) => {
-      const data = await redisClient.get('name')
-      if (data) {
-        resolve(data)
-      } else {
-        reject(new Error('Could not fetch'))
-      }
-    })
-  }
-  const name = getName().then((name) => console.log(name))
-
   // global middleware
   if ((process.env.NODE_ENV = 'development')) {
     app.use(morgan('dev'))
   }
 
-  const getSetCache = async (key, cb) => {
-    return new Promise(async (resolve, reject) => {
-      console.log('Hellos inital')
-      await redisClient.get(key, async (error, data) => {
-        console.log('data:')
-        if (error) reject(error)
-        if (data !== null) {
-          console.log('Hellos after connection')
-          resolve(JSON.parse(data))
-        } else {
-          const freshData = cb()
-          console.log('Hellos after connection callback')
-          await redisClient.setEx(key, 3600, JSON.stringify(freshData))
-          resolve(freshData)
-        }
-      })
-    })
-  }
-
-  function cacheMiddleware(req, res, next) {
-    const { username } = req.params
-    client.get(username, (err, data) => {
-      if (err) throw err
-
-      if (data !== null) {
-        res.json(composeResponse(username, data, true))
-      } else {
-        next()
-      }
-    })
-  }
-
-  app.locals.getSetCache = getSetCache
+  app.locals.redisClient = redisClient
 
   app.use(express.json())
   app.use(cors())
@@ -214,23 +172,6 @@ const initializeExpress = async () => {
       },
     )
   })
-
-  // const getSetCache = async (key, cb) => {
-  //   return new Promise(async (resolve, reject) => {
-  //     redisClient.get(key, async (error, data) => {
-  //       if (error) reject(error)
-  //       if (data !== null) {
-  //         console.log('Hellos')
-  //         resolve(JSON.parse(data))
-  //       }
-  //       const freshData = await cb()
-  //       redisClient.setEx(key, 3600, JSON.stringify(freshData))
-  //       resolve(freshData)
-  //     })
-  //   })
-  // }
-
-  // app.locals.getSetCache = getSetCache
 }
 
 initializeExpress()
