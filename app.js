@@ -44,7 +44,6 @@ const initializeExpress = async () => {
   const server = http.createServer(app)
 
   redisClient = redis.createClient({
-    // url: `rediss://red-cpn9je5ds78s73as2tig:668cl1SmVxZfJqKfZ3lwcMsQByxRKFFK@oregon-redis.render.com:6379`,
     url: `rediss://${REDIS_USER}:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}`,
   })
   redisClient.on('error', (err) => {
