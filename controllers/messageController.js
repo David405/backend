@@ -1,6 +1,7 @@
 const Message = require('../models/message')
 const catchAsync = require('../utils/catchAsync')
 const appError = require('../utils/appError')
+const AppError = require('../utils/appError')
 
 // functions that will filter out fields tha we dont want to update
 const filterObj = (obj, ...allowedFields) => {
@@ -22,6 +23,8 @@ exports.createMessage = catchAsync(async (req, res, next) => {
 })
 
 exports.getAllMessages = catchAsync(async (req, res, next) => {
+  const { redisClient } = req.app.locals
+
   let filter = {}
   if (req.params.sessionId) filter = { chatSession: req.params.sessionId }
 
@@ -29,9 +32,28 @@ exports.getAllMessages = catchAsync(async (req, res, next) => {
   const limit = req.query.limit * 1 || 50
   const skip = (page - 1) * limit
 
-  const messages = await Message.find(filter).skip(skip).limit(limit)
+  const cacheKey = `messages:${req.params.sessionId}:${page}:${limit}`
 
-  res.status(200).json({
+  const getMessages = async () => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const data = await redisClient.get(cacheKey)
+        if (!data) {
+          const freshData = await Message.find(filter).skip(skip).limit(limit)
+          redisClient.setEx(cacheKey, 3600, JSON.stringify(freshData))
+          resolve(freshData)
+        } else {
+          resolve(JSON.parse(data))
+        }
+      } catch {
+        reject(new AppError('Error Fetching Messages'))
+      }
+    })
+  }
+
+  const messages = await getMessages()
+
+  return res.status(200).json({
     results: messages.length,
     status: 'success',
     data: {
@@ -63,8 +85,6 @@ exports.editMessage = catchAsync(async (req, res, next) => {
   if (!message) {
     return next(new appError('No message found ', 404))
   }
-  //   console.log(message.id)
-  //   console.log(message)
 
   const newMessage = await Message.findByIdAndUpdate(message.id, filteredBody, {
     new: true,
