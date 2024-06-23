@@ -31,8 +31,9 @@ exports.getAllMessages = catchAsync(async (req, res, next) => {
   const page = req.query.page * 1 || 1
   const limit = req.query.limit * 1 || 50
   const skip = (page - 1) * limit
+  const currentDate = new Date()
 
-  const cacheKey = `messages:${req.params.sessionId}:${page}:${limit}`
+  const cacheKey = `messages:${req.params.sessionId}:${page}:${limit}:${currentDate}`
 
   const getMessages = async () => {
     return new Promise(async (resolve, reject) => {
