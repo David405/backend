@@ -38,6 +38,16 @@ const REDIS_USER = process.env.REDIS_USER
 const app = express()
 
 const server = http.createServer(app)
+
+const io = new Server(server, {
+  cors: {
+    origin: ['https://agp-careers-dev.netlify.app', 'http://localhost:3000'],
+    credentials: true,
+  },
+})
+
+app.set('socketio', io)
+
 const initializeExpress = async () => {
   let redisClient
 
@@ -108,13 +118,6 @@ const initializeExpress = async () => {
     console.log(`Server is running on port ${PORT}`)
   })
 
-  const io = new Server(server, {
-    cors: {
-      origin: ['https://agp-careers-dev.netlify.app', 'http://localhost:3000'],
-      credentials: true,
-    },
-  })
-
   const Message = mongoose.model('Message')
   const User = mongoose.model('User')
 
@@ -162,6 +165,7 @@ const initializeExpress = async () => {
     socket.on(
       chatEvents.chatSessionMessage,
       async ({ chatSessionId, message }) => {
+        console.log('Passed here')
         if (message.trim().length > 0) {
           const user = await User.findOne({ _id: socket.userId })
           const newMessage = new Message({
